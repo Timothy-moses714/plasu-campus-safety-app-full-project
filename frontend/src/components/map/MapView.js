@@ -11,6 +11,7 @@ const MapView = ({ center, markers = [], onMapClick }) => {
       zoom: 15,
       mapTypeControl: false,
       streetViewControl: false,
+      fullscreenControl: false,
     });
     mapInstanceRef.current = map;
 
@@ -25,11 +26,19 @@ const MapView = ({ center, markers = [], onMapClick }) => {
         position: { lat, lng },
         map,
         label: label || "",
-        icon: color ? { path: window.google.maps.SymbolPath.CIRCLE, scale: 8, fillColor: color, fillOpacity: 1, strokeWeight: 1 } : undefined,
+        icon: color
+          ? { path: window.google.maps.SymbolPath.CIRCLE, scale: 8, fillColor: color, fillOpacity: 1, strokeWeight: 1 }
+          : undefined,
       });
     });
   }, [center, markers]);
 
-  return <div ref={mapRef} className="w-full h-full rounded-xl" style={{ minHeight: "300px" }} />;
+  return (
+    <div
+      ref={mapRef}
+      className="w-full h-full rounded-xl"
+      style={{ minHeight: "250px" }}
+    />
+  );
 };
 export default MapView;

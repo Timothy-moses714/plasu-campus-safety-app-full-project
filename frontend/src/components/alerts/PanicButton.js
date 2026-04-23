@@ -28,14 +28,18 @@ const PanicButton = () => {
       <button
         onClick={handlePanic}
         disabled={loading || triggered}
-        className={`w-40 h-40 rounded-full text-white font-bold text-xl shadow-2xl transition-all duration-300 active:scale-95 ${
-          triggered ? "bg-green-500 scale-95" : "bg-red-600 hover:bg-red-700 animate-pulse"
-        }`}
+        className={`w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 rounded-full text-white font-bold text-lg sm:text-xl md:text-2xl shadow-2xl transition-all duration-300 active:scale-95 ${
+          triggered
+            ? "bg-green-500 scale-95"
+            : "bg-red-600 hover:bg-red-700 animate-pulse"
+        } ${loading || triggered ? "opacity-80 cursor-not-allowed" : ""}`}
       >
         {loading ? "Sending..." : triggered ? "Help Sent!" : "PANIC"}
       </button>
-      <p className="text-sm text-gray-500 text-center">
-        {triggered ? "Security has been notified." : "Press in case of emergency"}
+      <p className="text-xs sm:text-sm text-gray-500 text-center">
+        {triggered
+          ? "Security has been notified."
+          : "Press in case of emergency"}
       </p>
     </div>
   );

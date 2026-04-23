@@ -38,39 +38,49 @@ const ReportIncident = () => {
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       <Navbar />
-      <div className="px-4 pt-6 space-y-5">
-        <h2 className="text-xl font-bold text-gray-800">📋 Report Incident</h2>
+      <div className="px-4 sm:px-6 md:px-8 pt-5 sm:pt-6 space-y-4 sm:space-y-5 max-w-2xl mx-auto">
+        <h2 className="text-lg sm:text-xl font-bold text-gray-800">📋 Report Incident</h2>
         {success ? (
           <div className="bg-green-50 border border-green-200 rounded-xl p-6 text-center">
-            <p className="text-green-700 font-bold text-lg">✓ Report Submitted</p>
-            <p className="text-sm text-green-600 mt-1">Security has been notified. Redirecting...</p>
+            <p className="text-green-700 font-bold text-base sm:text-lg">✓ Report Submitted</p>
+            <p className="text-xs sm:text-sm text-green-600 mt-1">Security has been notified. Redirecting...</p>
           </div>
         ) : (
-          <div className="bg-white rounded-2xl shadow p-5 space-y-4">
+          <div className="bg-white rounded-2xl shadow p-4 sm:p-5 space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Incident Title</label>
-              <input name="title" value={form.title} onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-500"
-                placeholder="Brief title of the incident" />
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Incident Title</label>
+              <input
+                name="title" value={form.title} onChange={handleChange}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-red-500"
+                placeholder="Brief title of the incident"
+              />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
-              <select name="type" value={form.type} onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-500">
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Type</label>
+              <select
+                name="type" value={form.type} onChange={handleChange}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
+              >
                 <option value="">Select type...</option>
-                {INCIDENT_TYPES.map((t) => <option key={t} value={t.toLowerCase().replace(/ /g, "_")}>{t}</option>)}
+                {INCIDENT_TYPES.map((t) => (
+                  <option key={t} value={t.toLowerCase().replace(/ /g, "_")}>{t}</option>
+                ))}
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-              <textarea name="description" value={form.description} onChange={handleChange} rows={4}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-500 resize-none"
-                placeholder="Describe what happened..." />
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Description</label>
+              <textarea
+                name="description" value={form.description} onChange={handleChange} rows={4}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-red-500 resize-none"
+                placeholder="Describe what happened..."
+              />
             </div>
-            <p className="text-xs text-gray-400">
-              📍 {location ? `Location captured (${location.lat.toFixed(4)}, ${location.lng.toFixed(4)})` : "Capturing your location..."}
+            <p className="text-[10px] sm:text-xs text-gray-400">
+              📍 {location
+                ? `Location captured (${location.lat.toFixed(4)}, ${location.lng.toFixed(4)})`
+                : "Capturing your location..."}
             </p>
-            <Button onClick={handleSubmit} fullWidth disabled={loading}>
+            <Button onClick={handleSubmit} fullWidth size="lg" disabled={loading}>
               {loading ? <Spinner size="sm" color="white" /> : "Submit Report"}
             </Button>
           </div>
