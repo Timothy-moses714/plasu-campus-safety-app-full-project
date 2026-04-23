@@ -1,59 +1,52 @@
 const Incident = require("../models/Incident");
-const { sendResponse, sendError } = require("../utils/sendResponse");
 
-// @route  POST /api/incidents
 const reportIncident = async (req, res) => {
   const { title, description, type, location } = req.body;
   try {
-    const incident = await Incident.create({
-      title, description, type, location,
-      reportedBy: req.user._id,
-    });
+    if (!title || !type) {
+      return res.status(400).json({ message: "Title and type are required" });
+    }
+    const incident = await Incident.create({ title, description, type, location, reportedBy: req.user._id });
     await incident.populate("reportedBy", "name matricNumber department");
-    sendResponse(res, 201, incident, "Incident reported successfully");
+    return res.status(201).json({ message: "Incident reported", data: incident });
   } catch (err) {
-    sendError(res, 500, err.message);
+    return res.status(500).json({ message: err.message });
   }
 };
 
-// @route  GET /api/incidents
 const getIncidents = async (req, res) => {
   try {
     const filter = req.user.role === "student" ? { reportedBy: req.user._id } : {};
     const incidents = await Incident.find(filter)
       .sort({ createdAt: -1 })
       .populate("reportedBy", "name matricNumber department");
-    sendResponse(res, 200, incidents);
+    return res.status(200).json({ message: "Success", data: incidents });
   } catch (err) {
-    sendError(res, 500, err.message);
+    return res.status(500).json({ message: err.message });
   }
 };
 
-// @route  GET /api/incidents/:id
 const getIncidentById = async (req, res) => {
   try {
     const incident = await Incident.findById(req.params.id)
       .populate("reportedBy", "name matricNumber department phone");
-    if (!incident) return sendError(res, 404, "Incident not found");
-    sendResponse(res, 200, incident);
+    if (!incident) return res.status(404).json({ message: "Incident not found" });
+    return res.status(200).json({ message: "Success", data: incident });
   } catch (err) {
-    sendError(res, 500, err.message);
+    return res.status(500).json({ message: err.message });
   }
 };
 
-// @route  PATCH /api/incidents/:id  (admin/security only)
 const updateIncidentStatus = async (req, res) => {
   const { status } = req.body;
   try {
     const incident = await Incident.findByIdAndUpdate(
-      req.params.id,
-      { status },
-      { new: true, runValidators: true }
+      req.params.id, { status }, { new: true, runValidators: true }
     );
-    if (!incident) return sendError(res, 404, "Incident not found");
-    sendResponse(res, 200, incident, "Status updated");
+    if (!incident) return res.status(404).json({ message: "Incident not found" });
+    return res.status(200).json({ message: "Status updated", data: incident });
   } catch (err) {
-    sendError(res, 500, err.message);
+    return res.status(500).json({ message: err.message });
   }
 };
 

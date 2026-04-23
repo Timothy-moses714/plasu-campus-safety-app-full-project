@@ -1,39 +1,33 @@
 const User = require("../models/User");
-const { sendResponse, sendError } = require("../utils/sendResponse");
 
-// @route  GET /api/users  (admin only)
 const getAllUsers = async (req, res) => {
   try {
     const users = await User.find().sort({ createdAt: -1 });
-    sendResponse(res, 200, users);
+    return res.status(200).json({ message: "Success", data: users });
   } catch (err) {
-    sendError(res, 500, err.message);
+    return res.status(500).json({ message: err.message });
   }
 };
 
-// @route  GET /api/users/:id
 const getUserById = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
-    if (!user) return sendError(res, 404, "User not found");
-    sendResponse(res, 200, user);
+    if (!user) return res.status(404).json({ message: "User not found" });
+    return res.status(200).json({ message: "Success", data: user });
   } catch (err) {
-    sendError(res, 500, err.message);
+    return res.status(500).json({ message: err.message });
   }
 };
 
-// @route  PATCH /api/users/profile
 const updateProfile = async (req, res) => {
   const { name, phone, department } = req.body;
   try {
     const user = await User.findByIdAndUpdate(
-      req.user._id,
-      { name, phone, department },
-      { new: true, runValidators: true }
+      req.user._id, { name, phone, department }, { new: true, runValidators: true }
     );
-    sendResponse(res, 200, user, "Profile updated");
+    return res.status(200).json({ message: "Profile updated", data: user });
   } catch (err) {
-    sendError(res, 500, err.message);
+    return res.status(500).json({ message: err.message });
   }
 };
 

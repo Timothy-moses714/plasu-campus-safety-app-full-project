@@ -1,75 +1,59 @@
 const Alert = require("../models/Alert");
 const PanicAlert = require("../models/PanicAlert");
-const { sendResponse, sendError } = require("../utils/sendResponse");
 
-// @route  GET /api/alerts
 const getAlerts = async (req, res) => {
   try {
     const alerts = await Alert.find({ isActive: true })
       .sort({ createdAt: -1 })
       .populate("issuedBy", "name role");
-    sendResponse(res, 200, alerts);
+    return res.status(200).json({ message: "Success", data: alerts });
   } catch (err) {
-    sendError(res, 500, err.message);
+    return res.status(500).json({ message: err.message });
   }
 };
 
-// @route  POST /api/alerts  (admin/security only)
 const createAlert = async (req, res) => {
   const { message, severity, location, expiresAt } = req.body;
   try {
-    const alert = await Alert.create({
-      message, severity, location, expiresAt,
-      issuedBy: req.user._id,
-    });
-    sendResponse(res, 201, alert, "Alert created");
+    const alert = await Alert.create({ message, severity, location, expiresAt, issuedBy: req.user._id });
+    return res.status(201).json({ message: "Alert created", data: alert });
   } catch (err) {
-    sendError(res, 500, err.message);
+    return res.status(500).json({ message: err.message });
   }
 };
 
-// @route  POST /api/alerts/panic
 const triggerPanic = async (req, res) => {
   const { location } = req.body;
   try {
-    if (!location?.lat || !location?.lng) {
-      return sendError(res, 400, "Location is required for panic alert");
+    if (!location || !location.lat || !location.lng) {
+      return res.status(400).json({ message: "Location is required" });
     }
-    const panic = await PanicAlert.create({
-      triggeredBy: req.user._id,
-      location,
-    });
+    const panic = await PanicAlert.create({ triggeredBy: req.user._id, location });
     await panic.populate("triggeredBy", "name matricNumber phone department");
-    sendResponse(res, 201, panic, "Panic alert triggered. Security notified.");
+    return res.status(201).json({ message: "Panic alert triggered", data: panic });
   } catch (err) {
-    sendError(res, 500, err.message);
+    return res.status(500).json({ message: err.message });
   }
 };
 
-// @route  GET /api/alerts/panics  (admin/security only)
 const getPanicAlerts = async (req, res) => {
   try {
     const panics = await PanicAlert.find()
       .sort({ createdAt: -1 })
       .populate("triggeredBy", "name matricNumber phone department");
-    sendResponse(res, 200, panics);
+    return res.status(200).json({ message: "Success", data: panics });
   } catch (err) {
-    sendError(res, 500, err.message);
+    return res.status(500).json({ message: err.message });
   }
 };
 
-// @route  PATCH /api/alerts/:id/deactivate  (admin/security only)
 const deactivateAlert = async (req, res) => {
   try {
-    const alert = await Alert.findByIdAndUpdate(
-      req.params.id,
-      { isActive: false },
-      { new: true }
-    );
-    if (!alert) return sendError(res, 404, "Alert not found");
-    sendResponse(res, 200, alert, "Alert deactivated");
+    const alert = await Alert.findByIdAndUpdate(req.params.id, { isActive: false }, { new: true });
+    if (!alert) return res.status(404).json({ message: "Alert not found" });
+    return res.status(200).json({ message: "Alert deactivated", data: alert });
   } catch (err) {
-    sendError(res, 500, err.message);
+    return res.status(500).json({ message: err.message });
   }
 };
 
