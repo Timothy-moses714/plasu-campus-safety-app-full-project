@@ -11,10 +11,7 @@ export const getAlerts = async (token) => {
 export const triggerPanic = async (location, token) => {
   const res = await fetch(`${BASE_URL}/alerts/panic`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
     body: JSON.stringify({ location }),
   });
   if (!res.ok) throw new Error("Panic alert failed");
@@ -24,12 +21,18 @@ export const triggerPanic = async (location, token) => {
 export const createAlert = async (alertData, token) => {
   const res = await fetch(`${BASE_URL}/alerts`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
     body: JSON.stringify(alertData),
   });
   if (!res.ok) throw new Error("Failed to create alert");
+  return res.json();
+};
+
+export const deactivateAlert = async (id, token) => {
+  const res = await fetch(`${BASE_URL}/alerts/${id}/deactivate`, {
+    method: "PATCH",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("Failed to deactivate alert");
   return res.json();
 };

@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const seedAdmin = require("./seed");
 
 const connectDB = async () => {
   try {
@@ -8,6 +9,7 @@ const connectDB = async () => {
       connectTimeoutMS: 30000,
     });
     console.log("MongoDB Connected: " + conn.connection.host);
+    await seedAdmin();
   } catch (error) {
     console.error("MongoDB Error: " + error.message);
     console.log("Retrying in 5 seconds...");

@@ -8,6 +8,7 @@ import UserModel from "../models/User";
 
 const Register = () => {
   const [formData, setFormData] = useState({ ...UserModel, password: "" });
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
@@ -21,7 +22,9 @@ const Register = () => {
     setError("");
     try {
       const data = await registerUser(formData);
-      login(data.user || data);
+      const user = data.data?.user || data.user || data;
+      const token = data.data?.token || data.token;
+      login({ ...user, token });
       navigate("/");
     } catch {
       setError("Registration failed. Please try again.");
@@ -36,7 +39,6 @@ const Register = () => {
     { name: "matricNumber", label: "Matric Number", type: "text", placeholder: "PLU/CSC/2021/001" },
     { name: "department", label: "Department", type: "text", placeholder: "Computer Science" },
     { name: "phone", label: "Phone", type: "tel", placeholder: "08012345678" },
-    { name: "password", label: "Password", type: "password", placeholder: "••••••••" },
   ];
 
   return (
@@ -61,6 +63,27 @@ const Register = () => {
               />
             </div>
           ))}
+
+          {/* Password field with toggle */}
+          <div>
+            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Password</label>
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password" value={formData.password || ""} onChange={handleChange}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 pr-10 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-red-500"
+                placeholder="Min. 6 characters"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-lg"
+              >
+                {showPassword ? "🙈" : "👁"}
+              </button>
+            </div>
+          </div>
+
           <Button onClick={handleSubmit} fullWidth size="lg" disabled={loading}>
             {loading ? <Spinner size="sm" color="white" /> : "Register"}
           </Button>
