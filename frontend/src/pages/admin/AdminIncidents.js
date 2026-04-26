@@ -21,6 +21,7 @@ const AdminIncidents = () => {
   const [selected, setSelected] = useState(null);
   const { user } = useAuth();
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     getIncidents(user.token)
       .then(res => { setIncidents(res.data || []); setFiltered(res.data || []); })
