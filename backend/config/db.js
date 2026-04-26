@@ -17,4 +17,13 @@ const connectDB = async () => {
   }
 };
 
+mongoose.connection.on("disconnected", () => {
+  console.log("MongoDB disconnected! Reconnecting...");
+  setTimeout(connectDB, 3000);
+});
+
+mongoose.connection.on("reconnected", () => {
+  console.log("MongoDB reconnected!");
+});
+
 module.exports = connectDB;

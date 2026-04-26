@@ -44,7 +44,7 @@ const Register = () => {
     <div className="min-h-screen flex">
       {/* Left - Campus image */}
       <div className="hidden lg:flex lg:w-1/2 relative">
-        <img src="/images/senate-building.jpg" alt="PLASU Senate" className="w-full h-full object-cover" />
+        <img src="/images/campus-main.jpg" alt="campus main" className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-red-900 bg-opacity-60 flex flex-col justify-end p-10">
           <img src="/images/plasu-logo.png" alt="PLASU Logo" className="w-20 h-20 object-contain mb-4" />
           <h2 className="text-white text-3xl font-bold">Join PLASU SafeApp</h2>

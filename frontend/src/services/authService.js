@@ -3,16 +3,16 @@ const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
 // ─── MOCK DATA (remove when backend is ready) ────────────────────────────────
 const MOCK_USER = {
   id: "mock-001",
-  name: "Timothy Dakup",
+  name: "Timothy  Moses",
   email: "timothy@plasu.edu.ng",
   phone: "08012345678",
   role: "student",
-  matricNumber: "PLU/CSC/2021/001",
+  matricNumber: "PLU/CSC/2021/0001",
   department: "Computer Science",
   token: "mock-jwt-token-123",
 };
 
-const USE_MOCK = true; // set to false when backend is ready
+const USE_MOCK = false; // set to false when backend is ready
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const loginUser = async (email, password) => {
