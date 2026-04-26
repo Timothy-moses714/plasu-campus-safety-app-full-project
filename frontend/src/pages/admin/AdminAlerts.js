@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import AdminLayout from "../../components/admin/AdminLayout";
 import { getAlerts, createAlert, deactivateAlert } from "../../services/alertService";
 import { useAuth } from "../../context/AuthContext";
@@ -18,15 +18,19 @@ const AdminAlerts = () => {
   const [form, setForm] = useState({ message: "", severity: "info" });
   const { user } = useAuth();
 
-  const fetchAlerts = async () => {
+  const fetchAlerts = useCallback(async () => {
     try {
       const res = await getAlerts(user.token);
-      setAlerts(res.data || []);
-    } catch (err) { console.error(err); }
-    finally { setLoading(false); }
-  };
+      const data = res.data || res;
+      setAlerts(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }, [user.token]);
 
-  useEffect(() => { fetchAlerts(); }, []);
+  useEffect(() => { fetchAlerts(); }, [fetchAlerts]);
 
   const handleSend = async () => {
     if (!form.message) return alert("Please enter a message");
@@ -42,7 +46,7 @@ const AdminAlerts = () => {
   const handleDeactivate = async (id) => {
     try {
       await deactivateAlert(id, user.token);
-      setAlerts(prev => prev.filter(a => a._id !== id));
+      setAlerts(prev => prev.filter(a => (a._id || a.id) !== id));
     } catch { alert("Failed to deactivate"); }
   };
 
@@ -54,7 +58,6 @@ const AdminAlerts = () => {
           <p className="text-gray-400 text-sm mt-1">Broadcast alerts to all students</p>
         </div>
 
-        {/* Send Alert Form */}
         <div className="bg-gray-800 border border-gray-700 rounded-2xl p-5 space-y-4">
           <h2 className="text-white font-bold">Send New Alert</h2>
           <div>
@@ -78,7 +81,6 @@ const AdminAlerts = () => {
           </button>
         </div>
 
-        {/* Active Alerts */}
         <div>
           <h2 className="text-white font-bold mb-3">Active Alerts</h2>
           {loading ? (
@@ -88,13 +90,13 @@ const AdminAlerts = () => {
           ) : (
             <div className="space-y-3">
               {alerts.map((alert) => (
-                <div key={alert._id} className={`border rounded-xl p-4 flex items-start justify-between gap-3 ${SEVERITY_COLORS[alert.severity]}`}>
+                <div key={alert._id || alert.id} className={`border rounded-xl p-4 flex items-start justify-between gap-3 ${SEVERITY_COLORS[alert.severity]}`}>
                   <div>
                     <p className="font-semibold text-sm capitalize">{alert.severity} Alert</p>
                     <p className="text-xs mt-1 opacity-80">{alert.message}</p>
                     <p className="text-xs mt-1 opacity-60">{timeAgo(alert.createdAt)}</p>
                   </div>
-                  <button onClick={() => handleDeactivate(alert._id)}
+                  <button onClick={() => handleDeactivate(alert._id || alert.id)}
                     className="bg-black bg-opacity-20 hover:bg-opacity-40 text-xs px-3 py-1 rounded-lg transition shrink-0">
                     Deactivate
                   </button>

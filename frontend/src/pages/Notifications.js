@@ -19,17 +19,38 @@ const Notifications = () => {
   const { user } = useAuth();
 
   useEffect(() => {
-    getAlerts(user.token)
-      .then(setAlerts)
-      .catch(() => setAlerts([]))
-      .finally(() => setLoading(false));
-  }, [user.token]);
+    const fetchAlerts = async () => {
+      try {
+        const res = await getAlerts(user.token);
+        const data = res.data || res;
+        setAlerts(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error("Failed to fetch alerts:", err);
+        setAlerts([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAlerts();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       <Navbar />
-      <div className="px-4 sm:px-6 md:px-8 pt-5 sm:pt-6 space-y-3 sm:space-y-4 max-w-2xl mx-auto">
-        <h2 className="text-lg sm:text-xl font-bold text-gray-800">🔔 Alerts & Notifications</h2>
+
+      {/* Header image */}
+      <div className="relative h-32 sm:h-40 overflow-hidden">
+        <img src="/images/justice-statue.jpg" alt="Campus" className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-red-900 bg-opacity-65 flex items-center px-4">
+          <div>
+            <h1 className="text-white font-bold text-lg sm:text-xl">🔔 Alerts & Notifications</h1>
+            <p className="text-red-200 text-xs sm:text-sm">Stay informed about campus safety</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="px-4 sm:px-6 pt-5 space-y-3 max-w-2xl mx-auto">
         {loading ? (
           <div className="py-10"><Spinner /></div>
         ) : alerts.length === 0 ? (
@@ -39,15 +60,13 @@ const Notifications = () => {
           </div>
         ) : (
           alerts.map((alert) => (
-            <div
-              key={alert.id}
-              className={`border rounded-xl p-3 sm:p-4 ${severityStyles[alert.severity] || severityStyles.info}`}
-            >
+            <div key={alert._id || alert.id}
+              className={`border rounded-xl p-3 sm:p-4 ${severityStyles[alert.severity] || severityStyles.info}`}>
               <div className="flex items-start gap-2">
                 <span className="text-lg sm:text-xl shrink-0">{severityIcons[alert.severity] || "ℹ️"}</span>
                 <div className="min-w-0">
                   <p className="font-semibold text-xs sm:text-sm">{alert.message}</p>
-                  <p className="text-[10px] sm:text-xs opacity-70 mt-1">{timeAgo(alert.issuedAt)}</p>
+                  <p className="text-[10px] sm:text-xs opacity-70 mt-1">{timeAgo(alert.issuedAt || alert.createdAt)}</p>
                 </div>
               </div>
             </div>

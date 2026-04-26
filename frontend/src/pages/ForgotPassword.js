@@ -21,11 +21,19 @@ const ForgotPassword = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message);
+
+      let data;
+      try {
+        data = await res.json();
+      } catch {
+        throw new Error("Server error. Please check your backend is running.");
+      }
+
+      if (!res.ok) throw new Error(data.message || "Something went wrong.");
+
       setSuccess(true);
     } catch (err) {
-      setError(err.message || "Something went wrong. Please try again.");
+      setError(err.message || "Could not connect to server. Make sure backend is running.");
     } finally {
       setLoading(false);
     }
@@ -38,19 +46,20 @@ const ForgotPassword = () => {
           <span className="text-4xl sm:text-5xl">🔐</span>
           <h1 className="text-xl sm:text-2xl font-bold text-gray-800 mt-2">Forgot Password</h1>
           <p className="text-gray-500 text-xs sm:text-sm mt-1">
-            Enter your email and we'll send you a reset link
+            Enter your registered email and we'll send a reset link
           </p>
         </div>
 
         {success ? (
           <div className="text-center space-y-4">
             <div className="bg-green-50 border border-green-200 rounded-xl p-5">
-              <p className="text-green-700 font-bold text-lg">📧 Email Sent!</p>
+              <p className="text-green-700 font-bold text-lg">📧 Check Your Email!</p>
               <p className="text-green-600 text-sm mt-2">
                 A password reset link has been sent to <strong>{email}</strong>.
-                Please check your inbox and spam folder.
               </p>
-              <p className="text-green-500 text-xs mt-2">Link expires in 30 minutes.</p>
+              <p className="text-green-500 text-xs mt-2">
+                Check your inbox and spam folder. Link expires in 30 minutes.
+              </p>
             </div>
             <Link to="/login"
               className="block w-full text-center bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg transition">
@@ -68,6 +77,7 @@ const ForgotPassword = () => {
               </label>
               <input
                 type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-red-500"
                 placeholder="you@plasu.edu.ng"
               />

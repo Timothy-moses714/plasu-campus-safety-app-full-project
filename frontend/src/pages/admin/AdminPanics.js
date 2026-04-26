@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import AdminLayout from "../../components/admin/AdminLayout";
 import { getPanicAlerts, updatePanicStatus } from "../../services/panicService";
 import { useAuth } from "../../context/AuthContext";
@@ -11,25 +11,26 @@ const AdminPanics = () => {
   const [updating, setUpdating] = useState(null);
   const { user } = useAuth();
 
-  const fetchPanics = async () => {
+  const fetchPanics = useCallback(async () => {
     try {
       const res = await getPanicAlerts(user.token);
-      setPanics(res.data || []);
+      const data = res.data || res;
+      setPanics(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
     }
-  };
+  }, [user.token]);
 
-  useEffect(() => { fetchPanics(); }, []);
+  useEffect(() => { fetchPanics(); }, [fetchPanics]);
 
   const handleUpdate = async (id, status) => {
     setUpdating(id);
     try {
       await updatePanicStatus(id, status, user.token);
-      setPanics(prev => prev.map(p => p._id === id ? { ...p, status } : p));
-    } catch (err) {
+      setPanics(prev => prev.map(p => (p._id === id ? { ...p, status } : p)));
+    } catch {
       alert("Failed to update status");
     } finally {
       setUpdating(null);
@@ -59,9 +60,7 @@ const AdminPanics = () => {
         ) : (
           <div className="space-y-4">
             {panics.map((panic) => (
-              <div key={panic._id} className={`bg-gray-800 border rounded-2xl p-5 ${
-                panic.status === "active" ? "border-red-600" : "border-gray-700"
-              }`}>
+              <div key={panic._id} className={`bg-gray-800 border rounded-2xl p-5 ${panic.status === "active" ? "border-red-600" : "border-gray-700"}`}>
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                   <div className="space-y-1">
                     {panic.status === "active" && (
@@ -78,27 +77,21 @@ const AdminPanics = () => {
                   </div>
                   <div className="flex flex-row sm:flex-col gap-2">
                     {panic.status === "active" && (
-                      <button
-                        onClick={() => handleUpdate(panic._id, "responded")}
-                        disabled={updating === panic._id}
-                        className="bg-green-600 hover:bg-green-700 text-white text-sm px-4 py-2 rounded-lg transition disabled:opacity-50"
-                      >
+                      <button onClick={() => handleUpdate(panic._id, "responded")} disabled={updating === panic._id}
+                        className="bg-green-600 hover:bg-green-700 text-white text-sm px-4 py-2 rounded-lg transition disabled:opacity-50">
                         {updating === panic._id ? "..." : "✓ Responded"}
                       </button>
                     )}
                     {panic.status !== "dismissed" && (
-                      <button
-                        onClick={() => handleUpdate(panic._id, "dismissed")}
-                        disabled={updating === panic._id}
-                        className="bg-gray-600 hover:bg-gray-500 text-white text-sm px-4 py-2 rounded-lg transition disabled:opacity-50"
-                      >
+                      <button onClick={() => handleUpdate(panic._id, "dismissed")} disabled={updating === panic._id}
+                        className="bg-gray-600 hover:bg-gray-500 text-white text-sm px-4 py-2 rounded-lg transition disabled:opacity-50">
                         Dismiss
                       </button>
                     )}
                     {panic.status !== "active" && (
-                      <span className={`text-xs px-3 py-1 rounded-full font-semibold text-center ${
-                        panic.status === "responded" ? "bg-green-900 text-green-300" : "bg-gray-700 text-gray-300"
-                      }`}>{panic.status}</span>
+                      <span className={`text-xs px-3 py-1 rounded-full font-semibold text-center ${panic.status === "responded" ? "bg-green-900 text-green-300" : "bg-gray-700 text-gray-300"}`}>
+                        {panic.status}
+                      </span>
                     )}
                   </div>
                 </div>

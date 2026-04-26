@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { registerUser } from "../services/authService";
 import { useAuth } from "../context/AuthContext";
-import Button from "../components/common/Button";
 import Spinner from "../components/common/Spinner";
 import UserModel from "../models/User";
 
@@ -42,56 +41,79 @@ const Register = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-8">
-      <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 w-full max-w-sm sm:max-w-md">
-        <div className="text-center mb-5">
-          <span className="text-4xl sm:text-5xl">🛡</span>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-800 mt-2">Create Account</h1>
-          <p className="text-gray-500 text-xs sm:text-sm">Join PLASU SafeApp</p>
+    <div className="min-h-screen flex">
+      {/* Left - Campus image */}
+      <div className="hidden lg:flex lg:w-1/2 relative">
+        <img src="/images/senate-building.jpg" alt="PLASU Senate" className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-red-900 bg-opacity-60 flex flex-col justify-end p-10">
+          <img src="/images/plasu-logo.png" alt="PLASU Logo" className="w-20 h-20 object-contain mb-4" />
+          <h2 className="text-white text-3xl font-bold">Join PLASU SafeApp</h2>
+          <p className="text-red-200 text-lg mt-1">Student Safety Portal</p>
+          <p className="text-red-300 text-sm mt-3 max-w-sm">
+            Register to access emergency alerts, safe route guidance, and incident reporting.
+          </p>
         </div>
-        {error && (
-          <div className="bg-red-50 text-red-600 text-xs sm:text-sm p-3 rounded-lg mb-4">{error}</div>
-        )}
-        <div className="space-y-3">
-          {fields.map(({ name, label, type, placeholder }) => (
-            <div key={name}>
-              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">{label}</label>
-              <input
-                type={type} name={name} value={formData[name] || ""} onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-red-500"
-                placeholder={placeholder}
-              />
-            </div>
-          ))}
+      </div>
 
-          {/* Password field with toggle */}
-          <div>
-            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Password</label>
-            <div className="relative">
-              <input
-                type={showPassword ? "text" : "password"}
-                name="password" value={formData.password || ""} onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 pr-10 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-red-500"
-                placeholder="Min. 6 characters"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-lg"
-              >
-                {showPassword ? "🙈" : "👁"}
-              </button>
+      {/* Right - Form */}
+      <div className="w-full lg:w-1/2 bg-gray-50 flex items-center justify-center px-4 py-8">
+        <div className="w-full max-w-md">
+          <div className="flex items-center justify-center gap-3 mb-6 lg:hidden">
+            <img src="/images/plasu-logo.png" alt="PLASU Logo" className="w-12 h-12 object-contain" />
+            <div>
+              <h1 className="text-lg font-bold text-gray-800">PLASU SafeApp</h1>
+              <p className="text-xs text-gray-500">Create your account</p>
             </div>
           </div>
 
-          <Button onClick={handleSubmit} fullWidth size="lg" disabled={loading}>
-            {loading ? <Spinner size="sm" color="white" /> : "Register"}
-          </Button>
+          <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-1">Create Account</h2>
+            <p className="text-gray-500 text-xs sm:text-sm mb-5">Join PLASU SafeApp today</p>
+
+            {error && (
+              <div className="bg-red-50 text-red-600 text-xs sm:text-sm p-3 rounded-lg mb-4">{error}</div>
+            )}
+
+            <div className="space-y-3">
+              {fields.map(({ name, label, type, placeholder }) => (
+                <div key={name}>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">{label}</label>
+                  <input
+                    type={type} name={name} value={formData[name] || ""} onChange={handleChange}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-red-500"
+                    placeholder={placeholder}
+                  />
+                </div>
+              ))}
+
+              <div>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Password</label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password" value={formData.password || ""} onChange={handleChange}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 pr-10 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-red-500"
+                    placeholder="Min. 6 characters"
+                  />
+                  <button type="button" onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-lg">
+                    {showPassword ? "🙈" : "👁"}
+                  </button>
+                </div>
+              </div>
+
+              <button onClick={handleSubmit} disabled={loading}
+                className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg transition disabled:opacity-50 flex items-center justify-center">
+                {loading ? <Spinner size="sm" color="white" /> : "Create Account"}
+              </button>
+            </div>
+
+            <p className="text-center text-xs sm:text-sm text-gray-500 mt-4">
+              Have an account?{" "}
+              <Link to="/login" className="text-red-600 font-semibold hover:underline">Sign In</Link>
+            </p>
+          </div>
         </div>
-        <p className="text-center text-xs sm:text-sm text-gray-500 mt-4">
-          Have an account?{" "}
-          <Link to="/login" className="text-red-600 font-semibold hover:underline">Sign In</Link>
-        </p>
       </div>
     </div>
   );

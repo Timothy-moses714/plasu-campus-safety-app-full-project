@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/layout/Navbar";
 import BottomNav from "../components/layout/BottomNav";
-import Button from "../components/common/Button";
 import Spinner from "../components/common/Spinner";
 import { reportIncident } from "../services/incidentService";
 import { useAuth } from "../context/AuthContext";
@@ -38,8 +37,19 @@ const ReportIncident = () => {
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       <Navbar />
-      <div className="px-4 sm:px-6 md:px-8 pt-5 sm:pt-6 space-y-4 sm:space-y-5 max-w-2xl mx-auto">
-        <h2 className="text-lg sm:text-xl font-bold text-gray-800">📋 Report Incident</h2>
+
+      {/* Header image */}
+      <div className="relative h-32 sm:h-40 overflow-hidden">
+        <img src="/images/fire-safety.jpg" alt="Campus Safety" className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-red-900 bg-opacity-65 flex items-center px-4">
+          <div>
+            <h1 className="text-white font-bold text-lg sm:text-xl">📋 Report Incident</h1>
+            <p className="text-red-200 text-xs sm:text-sm">Help keep campus safe by reporting incidents</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="px-4 sm:px-6 pt-5 space-y-4 max-w-2xl mx-auto">
         {success ? (
           <div className="bg-green-50 border border-green-200 rounded-xl p-6 text-center">
             <p className="text-green-700 font-bold text-base sm:text-lg">✓ Report Submitted</p>
@@ -49,18 +59,14 @@ const ReportIncident = () => {
           <div className="bg-white rounded-2xl shadow p-4 sm:p-5 space-y-4">
             <div>
               <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Incident Title</label>
-              <input
-                name="title" value={form.title} onChange={handleChange}
+              <input name="title" value={form.title} onChange={handleChange}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-red-500"
-                placeholder="Brief title of the incident"
-              />
+                placeholder="Brief title of the incident" />
             </div>
             <div>
               <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Type</label>
-              <select
-                name="type" value={form.type} onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
-              >
+              <select name="type" value={form.type} onChange={handleChange}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-red-500 bg-white">
                 <option value="">Select type...</option>
                 {INCIDENT_TYPES.map((t) => (
                   <option key={t} value={t.toLowerCase().replace(/ /g, "_")}>{t}</option>
@@ -69,20 +75,17 @@ const ReportIncident = () => {
             </div>
             <div>
               <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Description</label>
-              <textarea
-                name="description" value={form.description} onChange={handleChange} rows={4}
+              <textarea name="description" value={form.description} onChange={handleChange} rows={4}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-red-500 resize-none"
-                placeholder="Describe what happened..."
-              />
+                placeholder="Describe what happened..." />
             </div>
             <p className="text-[10px] sm:text-xs text-gray-400">
-              📍 {location
-                ? `Location captured (${location.lat.toFixed(4)}, ${location.lng.toFixed(4)})`
-                : "Capturing your location..."}
+              📍 {location ? `Location captured (${location.lat.toFixed(4)}, ${location.lng.toFixed(4)})` : "Capturing your location..."}
             </p>
-            <Button onClick={handleSubmit} fullWidth size="lg" disabled={loading}>
+            <button onClick={handleSubmit} disabled={loading}
+              className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg transition disabled:opacity-50 flex items-center justify-center">
               {loading ? <Spinner size="sm" color="white" /> : "Submit Report"}
-            </Button>
+            </button>
           </div>
         )}
       </div>

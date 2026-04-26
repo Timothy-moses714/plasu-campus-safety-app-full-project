@@ -13,10 +13,21 @@ const AdminUsers = () => {
   const { user } = useAuth();
 
   useEffect(() => {
-    getAllUsers(user.token)
-      .then(res => { setUsers(res.data || []); setFiltered(res.data || []); })
-      .catch(console.error)
-      .finally(() => setLoading(false));
+    const fetchUsers = async () => {
+      try {
+        const res = await getAllUsers(user.token);
+        const data = res.data || res;
+        const list = Array.isArray(data) ? data : [];
+        setUsers(list);
+        setFiltered(list);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUsers();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
