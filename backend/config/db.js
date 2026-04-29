@@ -1,29 +1,16 @@
-const mongoose = require("mongoose");
-const seedAdmin = require("./seed");
+const mongoose = require('mongoose');
 
 const connectDB = async () => {
   try {
     const conn = await mongoose.connect(process.env.MONGO_URI, {
-      serverSelectionTimeoutMS: 30000,
-      socketTimeoutMS: 45000,
-      connectTimeoutMS: 30000,
+      useNewUrlParser:    true,
+      useUnifiedTopology: true,
     });
-    console.log("MongoDB Connected: " + conn.connection.host);
-    await seedAdmin();
+    console.log(`MongoDB connected: ${conn.connection.host}`);
   } catch (error) {
-    console.error("MongoDB Error: " + error.message);
-    console.log("Retrying in 5 seconds...");
-    setTimeout(connectDB, 5000);
+    console.error(`MongoDB connection error: ${error.message}`);
+    process.exit(1);
   }
 };
-
-mongoose.connection.on("disconnected", () => {
-  console.log("MongoDB disconnected! Reconnecting...");
-  setTimeout(connectDB, 3000);
-});
-
-mongoose.connection.on("reconnected", () => {
-  console.log("MongoDB reconnected!");
-});
 
 module.exports = connectDB;

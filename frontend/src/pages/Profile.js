@@ -1,17 +1,12 @@
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
 
-const RegisterPage = () => {
-  const navigate = useNavigate();
-
+const ProfilePage = () => {
   const [formData, setFormData] = useState({
     fullName:        '',
     email:           '',
-    password:        '',
-    confirmPassword: '',
     phoneNumber:     '',
     matricNumber:    '',
     // ── Address fields ──────────────────────────────
@@ -21,61 +16,102 @@ const RegisterPage = () => {
     landmark:        '',
   });
 
-  const [error,   setError]   = useState('');
-  const [loading, setLoading] = useState(false);
+  const [loading,  setLoading]  = useState(true);
+  const [saving,   setSaving]   = useState(false);
+  const [success,  setSuccess]  = useState('');
+  const [error,    setError]    = useState('');
+
+  // ── Load current profile on mount ──────────────────────────────────────────
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const { data } = await axios.get(`${API_URL}/auth/me`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const u = data.user;
+        setFormData({
+          fullName:        u.fullName        || '',
+          email:           u.email           || '',
+          phoneNumber:     u.phoneNumber     || '',
+          matricNumber:    u.matricNumber    || '',
+          residentialType: u.residentialType || 'on-campus',
+          hostelName:      u.hostelName      || '',
+          streetArea:      u.streetArea      || '',
+          landmark:        u.landmark        || '',
+        });
+      } catch (err) {
+        setError('Could not load profile. Please refresh.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    setSuccess('');
+    setError('');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSaving(true);
+    setSuccess('');
     setError('');
 
-    if (formData.password !== formData.confirmPassword) {
-      return setError('Passwords do not match.');
-    }
-
-    if (formData.password.length < 6) {
-      return setError('Password must be at least 6 characters.');
-    }
-
-    setLoading(true);
     try {
-      const { data } = await axios.post(`${API_URL}/auth/register`, {
-        fullName:        formData.fullName,
-        email:           formData.email,
-        password:        formData.password,
-        phoneNumber:     formData.phoneNumber,
-        matricNumber:    formData.matricNumber,
-        residentialType: formData.residentialType,
-        hostelName:      formData.hostelName,
-        streetArea:      formData.streetArea,
-        landmark:        formData.landmark,
-      });
+      const token = localStorage.getItem('token');
+      await axios.put(
+        `${API_URL}/auth/profile`,
+        {
+          fullName:        formData.fullName,
+          phoneNumber:     formData.phoneNumber,
+          matricNumber:    formData.matricNumber,
+          residentialType: formData.residentialType,
+          hostelName:      formData.hostelName,
+          streetArea:      formData.streetArea,
+          landmark:        formData.landmark,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-      localStorage.setItem('token', data.token);
-      navigate('/dashboard');
+      setSuccess('Profile updated successfully.');
     } catch (err) {
-      setError(err.response?.data?.message || 'Registration failed. Try again.');
+      setError(err.response?.data?.message || 'Failed to update profile.');
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-gray-500">
+        Loading profile...
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-10">
-      <div className="bg-white rounded-2xl shadow-md w-full max-w-lg p-8">
+    <div className="min-h-screen bg-gray-50 px-4 py-10">
+      <div className="max-w-lg mx-auto bg-white rounded-2xl shadow-md p-8">
 
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-green-700">PLASU Safety App</h1>
-          <p className="text-gray-500 text-sm mt-1">Create your student account</p>
-        </div>
+        <h1 className="text-xl font-bold text-green-700 mb-1">My Profile</h1>
+        <p className="text-gray-500 text-sm mb-6">
+          Keep your address up to date — security uses this during emergencies.
+        </p>
 
+        {success && (
+          <div className="bg-green-50 border border-green-200 text-green-700 rounded-lg px-4 py-3 mb-5 text-sm">
+            {success}
+          </div>
+        )}
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-3 mb-6 text-sm">
+          <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-3 mb-5 text-sm">
             {error}
           </div>
         )}
@@ -95,7 +131,6 @@ const RegisterPage = () => {
               value={formData.fullName}
               onChange={handleChange}
               required
-              placeholder="e.g. Timothy Danladi"
               className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
             />
           </div>
@@ -106,11 +141,10 @@ const RegisterPage = () => {
               type="email"
               name="email"
               value={formData.email}
-              onChange={handleChange}
-              required
-              placeholder="e.g. timothy@plasu.edu.ng"
-              className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+              disabled
+              className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm bg-gray-100 text-gray-400 cursor-not-allowed"
             />
+            <p className="text-xs text-gray-400 mt-1">Email cannot be changed.</p>
           </div>
 
           <div>
@@ -121,59 +155,28 @@ const RegisterPage = () => {
               value={formData.phoneNumber}
               onChange={handleChange}
               required
-              placeholder="e.g. 08012345678"
               className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Matric Number <span className="text-gray-400">(optional)</span>
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Matric Number</label>
             <input
               type="text"
               name="matricNumber"
               value={formData.matricNumber}
               onChange={handleChange}
-              placeholder="e.g. PLASU/CS/2021/001"
               className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-              <input
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-                placeholder="Min. 6 characters"
-                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
-              <input
-                type="password"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                required
-                placeholder="Repeat password"
-                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-              />
-            </div>
-          </div>
-
           {/* ── Residential / Address Details ── */}
           <div className="pt-2">
-            <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">
+            <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-1">
               Residential Details
             </h2>
             <p className="text-xs text-gray-500 mb-4">
-              This helps security locate you faster during an emergency.
+              This is shown to security when you trigger an alert.
             </p>
           </div>
 
@@ -232,25 +235,17 @@ const RegisterPage = () => {
             />
           </div>
 
-          {/* Submit */}
           <button
             type="submit"
-            disabled={loading}
+            disabled={saving}
             className="w-full bg-green-700 hover:bg-green-800 text-white font-semibold py-3 rounded-lg transition-colors disabled:opacity-60 disabled:cursor-not-allowed mt-2"
           >
-            {loading ? 'Creating account...' : 'Create Account'}
+            {saving ? 'Saving...' : 'Save Changes'}
           </button>
-
-          <p className="text-center text-sm text-gray-500 mt-4">
-            Already have an account?{' '}
-            <Link to="/login" className="text-green-700 font-medium hover:underline">
-              Log in
-            </Link>
-          </p>
         </form>
       </div>
     </div>
   );
 };
 
-export default RegisterPage;
+export default ProfilePage;
