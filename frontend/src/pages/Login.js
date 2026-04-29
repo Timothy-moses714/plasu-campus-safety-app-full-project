@@ -41,7 +41,7 @@ const Login = () => {
       {/* Left side - Campus image */}
       <div className="hidden lg:flex lg:w-1/2 relative">
         <img
-          src="/images/campus-gate.jpg"
+          src="/images/plasu-gate-2.jpg"
           alt="PLASU Campus Gate"
           className="w-full h-full object-cover"
         />
