@@ -1,129 +1,74 @@
-const Alert = require('../models/Alert');
-const User  = require('../models/User');
+const Alert = require("../models/Alert");
+const PanicAlert = require("../models/PanicAlert");
 
-// ─── Create Alert (Panic Button Triggered) ───────────────────────────────────
+const getAlerts = async (req, res) => {
+  try {
+    const alerts = await Alert.find({ isActive: true })
+      .sort({ createdAt: -1 })
+      .populate("issuedBy", "name role");
+    return res.status(200).json({ message: "Success", data: alerts });
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+};
+
 const createAlert = async (req, res) => {
+  const { message, severity, location, expiresAt } = req.body;
   try {
-    const { lat, lng, message } = req.body;
-
-    if (!lat || !lng) {
-      return res.status(400).json({ message: 'GPS coordinates are required.' });
-    }
-
-    // Fetch the student's full profile to snapshot address + personal details
-    const student = await User.findById(req.user.id);
-    if (!student) {
-      return res.status(404).json({ message: 'Student not found.' });
-    }
-
-    const alert = await Alert.create({
-      student: req.user.id,
-      location: { lat, lng },
-
-      // ── Snapshot residential address at time of alert ──────────────────────
-      studentAddress: {
-        residentialType: student.residentialType || 'on-campus',
-        hostelName:      student.hostelName      || '',
-        streetArea:      student.streetArea      || '',
-        landmark:        student.landmark        || '',
-      },
-
-      // ── Snapshot personal details so security can call immediately ─────────
-      studentSnapshot: {
-        fullName:     student.fullName,
-        phoneNumber:  student.phoneNumber,
-        matricNumber: student.matricNumber || '',
-      },
-
-      message: message || '',
-      status:  'active',
-    });
-
-    res.status(201).json({
-      success: true,
-      message: 'Alert created. Help is on the way.',
-      alert,
-    });
-  } catch (error) {
-    console.error('createAlert error:', error);
-    res.status(500).json({ message: 'Server error creating alert.' });
+    if (!message) return res.status(400).json({ message: "Message is required" });
+    const alert = await Alert.create({ message, severity, location, expiresAt, issuedBy: req.user._id });
+    return res.status(201).json({ message: "Alert created", data: alert });
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
   }
 };
 
-// ─── Get All Alerts (Security / Admin Dashboard) ─────────────────────────────
-const getAllAlerts = async (req, res) => {
+const triggerPanic = async (req, res) => {
+  const { location } = req.body;
   try {
-    const alerts = await Alert.find()
-      .populate('student', 'fullName email phoneNumber matricNumber')
-      .populate('resolvedBy', 'fullName')
-      .sort({ createdAt: -1 });
-
-    res.status(200).json({ success: true, alerts });
-  } catch (error) {
-    console.error('getAllAlerts error:', error);
-    res.status(500).json({ message: 'Server error fetching alerts.' });
-  }
-};
-
-// ─── Get Active Alerts Only ───────────────────────────────────────────────────
-const getActiveAlerts = async (req, res) => {
-  try {
-    const alerts = await Alert.find({ status: { $in: ['active', 'responding'] } })
-      .populate('student', 'fullName email phoneNumber matricNumber')
-      .sort({ createdAt: -1 });
-
-    res.status(200).json({ success: true, alerts });
-  } catch (error) {
-    console.error('getActiveAlerts error:', error);
-    res.status(500).json({ message: 'Server error fetching active alerts.' });
-  }
-};
-
-// ─── Update Alert Status (Security Responds / Resolves) ──────────────────────
-const updateAlertStatus = async (req, res) => {
-  try {
-    const { alertId } = req.params;
-    const { status } = req.body;
-
-    if (!['active', 'responding', 'resolved'].includes(status)) {
-      return res.status(400).json({ message: 'Invalid status value.' });
+    if (!location || !location.lat || !location.lng) {
+      return res.status(400).json({ message: "Location is required" });
     }
-
-    const updateData = { status };
-
-    if (status === 'resolved') {
-      updateData.resolvedAt = new Date();
-      updateData.resolvedBy = req.user.id;
-    }
-
-    const alert = await Alert.findByIdAndUpdate(alertId, updateData, { new: true });
-
-    if (!alert) {
-      return res.status(404).json({ message: 'Alert not found.' });
-    }
-
-    res.status(200).json({ success: true, alert });
-  } catch (error) {
-    console.error('updateAlertStatus error:', error);
-    res.status(500).json({ message: 'Server error updating alert.' });
+    const panic = await PanicAlert.create({ triggeredBy: req.user._id, location });
+    await panic.populate("triggeredBy", "name matricNumber phone department");
+    return res.status(201).json({ message: "Panic alert triggered. Security notified.", data: panic });
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
   }
 };
 
-// ─── Get My Alerts (Student View) ────────────────────────────────────────────
-const getMyAlerts = async (req, res) => {
+const getPanicAlerts = async (req, res) => {
   try {
-    const alerts = await Alert.find({ student: req.user.id }).sort({ createdAt: -1 });
-    res.status(200).json({ success: true, alerts });
-  } catch (error) {
-    console.error('getMyAlerts error:', error);
-    res.status(500).json({ message: 'Server error fetching your alerts.' });
+    const panics = await PanicAlert.find()
+      .sort({ createdAt: -1 })
+      .populate("triggeredBy", "name matricNumber phone department");
+    return res.status(200).json({ message: "Success", data: panics });
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
   }
 };
 
-module.exports = {
-  createAlert,
-  getAllAlerts,
-  getActiveAlerts,
-  updateAlertStatus,
-  getMyAlerts,
+const updatePanicStatus = async (req, res) => {
+  const { status } = req.body;
+  try {
+    const panic = await PanicAlert.findByIdAndUpdate(
+      req.params.id, { status }, { new: true }
+    ).populate("triggeredBy", "name matricNumber phone department");
+    if (!panic) return res.status(404).json({ message: "Panic alert not found" });
+    return res.status(200).json({ message: "Status updated", data: panic });
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
 };
+
+const deactivateAlert = async (req, res) => {
+  try {
+    const alert = await Alert.findByIdAndUpdate(req.params.id, { isActive: false }, { new: true });
+    if (!alert) return res.status(404).json({ message: "Alert not found" });
+    return res.status(200).json({ message: "Alert deactivated", data: alert });
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+};
+
+module.exports = { getAlerts, createAlert, triggerPanic, getPanicAlerts, updatePanicStatus, deactivateAlert };

@@ -1,256 +1,121 @@
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import axios from 'axios';
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { registerUser } from "../services/authService";
+import { useAuth } from "../context/AuthContext";
+import Spinner from "../components/common/Spinner";
+import UserModel from "../models/User";
 
-const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
-
-const RegisterPage = () => {
+const Register = () => {
+  const [formData, setFormData] = useState({ ...UserModel, password: "" });
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { login } = useAuth();
   const navigate = useNavigate();
 
-  const [formData, setFormData] = useState({
-    fullName:        '',
-    email:           '',
-    password:        '',
-    confirmPassword: '',
-    phoneNumber:     '',
-    matricNumber:    '',
-    // ── Address fields ──────────────────────────────
-    residentialType: 'on-campus',
-    hostelName:      '',
-    streetArea:      '',
-    landmark:        '',
-  });
-
-  const [error,   setError]   = useState('');
-  const [loading, setLoading] = useState(false);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  const handleChange = (e) => setFormData((p) => ({ ...p, [e.target.name]: e.target.value }));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-
-    if (formData.password !== formData.confirmPassword) {
-      return setError('Passwords do not match.');
-    }
-
-    if (formData.password.length < 6) {
-      return setError('Password must be at least 6 characters.');
-    }
-
     setLoading(true);
+    setError("");
     try {
-      const { data } = await axios.post(`${API_URL}/auth/register`, {
-        fullName:        formData.fullName,
-        email:           formData.email,
-        password:        formData.password,
-        phoneNumber:     formData.phoneNumber,
-        matricNumber:    formData.matricNumber,
-        residentialType: formData.residentialType,
-        hostelName:      formData.hostelName,
-        streetArea:      formData.streetArea,
-        landmark:        formData.landmark,
-      });
-
-      localStorage.setItem('token', data.token);
-      navigate('/dashboard');
-    } catch (err) {
-      setError(err.response?.data?.message || 'Registration failed. Try again.');
+      const data = await registerUser(formData);
+      const user = data.data?.user || data.user || data;
+      const token = data.data?.token || data.token;
+      login({ ...user, token });
+      navigate("/");
+    } catch {
+      setError("Registration failed. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
+  const fields = [
+    { name: "name", label: "Full Name", type: "text", placeholder: "John Doe" },
+    { name: "email", label: "Email", type: "email", placeholder: "you@plasu.edu.ng" },
+    { name: "matricNumber", label: "Matric Number", type: "text", placeholder: "PLU/CSC/2021/001" },
+    { name: "department", label: "Department", type: "text", placeholder: "Computer Science" },
+    { name: "phone", label: "Phone", type: "tel", placeholder: "08012345678" },
+  ];
+
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-10">
-      <div className="bg-white rounded-2xl shadow-md w-full max-w-lg p-8">
-
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-green-700">PLASU Safety App</h1>
-          <p className="text-gray-500 text-sm mt-1">Create your student account</p>
+    <div className="min-h-screen flex">
+      {/* Left - Campus image */}
+      <div className="hidden lg:flex lg:w-1/2 relative">
+        <img src="/images/senate-building.jpg" alt="PLASU Senate" className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-red-900 bg-opacity-60 flex flex-col justify-end p-10">
+          <img src="/images/plasu-logo.png" alt="PLASU Logo" className="w-20 h-20 object-contain mb-4" />
+          <h2 className="text-white text-3xl font-bold">Join PLASU SafeApp</h2>
+          <p className="text-red-200 text-lg mt-1">Student Safety Portal</p>
+          <p className="text-red-300 text-sm mt-3 max-w-sm">
+            Register to access emergency alerts, safe route guidance, and incident reporting.
+          </p>
         </div>
+      </div>
 
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-3 mb-6 text-sm">
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-5">
-
-          {/* ── Personal Details ── */}
-          <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
-            Personal Details
-          </h2>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-            <input
-              type="text"
-              name="fullName"
-              value={formData.fullName}
-              onChange={handleChange}
-              required
-              placeholder="e.g. Timothy Danladi"
-              className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              placeholder="e.g. timothy@plasu.edu.ng"
-              className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-            <input
-              type="tel"
-              name="phoneNumber"
-              value={formData.phoneNumber}
-              onChange={handleChange}
-              required
-              placeholder="e.g. 08012345678"
-              className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Matric Number <span className="text-gray-400">(optional)</span>
-            </label>
-            <input
-              type="text"
-              name="matricNumber"
-              value={formData.matricNumber}
-              onChange={handleChange}
-              placeholder="e.g. PLASU/CS/2021/001"
-              className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
+      {/* Right - Form */}
+      <div className="w-full lg:w-1/2 bg-gray-50 flex items-center justify-center px-4 py-8">
+        <div className="w-full max-w-md">
+          <div className="flex items-center justify-center gap-3 mb-6 lg:hidden">
+            <img src="/images/plasu-logo.png" alt="PLASU Logo" className="w-12 h-12 object-contain" />
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-              <input
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-                placeholder="Min. 6 characters"
-                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
-              <input
-                type="password"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                required
-                placeholder="Repeat password"
-                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-              />
+              <h1 className="text-lg font-bold text-gray-800">PLASU SafeApp</h1>
+              <p className="text-xs text-gray-500">Create your account</p>
             </div>
           </div>
 
-          {/* ── Residential / Address Details ── */}
-          <div className="pt-2">
-            <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">
-              Residential Details
-            </h2>
-            <p className="text-xs text-gray-500 mb-4">
-              This helps security locate you faster during an emergency.
+          <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-1">Create Account</h2>
+            <p className="text-gray-500 text-xs sm:text-sm mb-5">Join PLASU SafeApp today</p>
+
+            {error && (
+              <div className="bg-red-50 text-red-600 text-xs sm:text-sm p-3 rounded-lg mb-4">{error}</div>
+            )}
+
+            <div className="space-y-3">
+              {fields.map(({ name, label, type, placeholder }) => (
+                <div key={name}>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">{label}</label>
+                  <input
+                    type={type} name={name} value={formData[name] || ""} onChange={handleChange}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-red-500"
+                    placeholder={placeholder}
+                  />
+                </div>
+              ))}
+
+              <div>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Password</label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password" value={formData.password || ""} onChange={handleChange}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 pr-10 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-red-500"
+                    placeholder="Min. 6 characters"
+                  />
+                  <button type="button" onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-lg">
+                    {showPassword ? "🙈" : "👁"}
+                  </button>
+                </div>
+              </div>
+
+              <button onClick={handleSubmit} disabled={loading}
+                className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg transition disabled:opacity-50 flex items-center justify-center">
+                {loading ? <Spinner size="sm" color="white" /> : "Create Account"}
+              </button>
+            </div>
+
+            <p className="text-center text-xs sm:text-sm text-gray-500 mt-4">
+              Have an account?{" "}
+              <Link to="/login" className="text-red-600 font-semibold hover:underline">Sign In</Link>
             </p>
           </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Where do you live?</label>
-            <select
-              name="residentialType"
-              value={formData.residentialType}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white"
-            >
-              <option value="on-campus">On-Campus</option>
-              <option value="off-campus">Off-Campus</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Hostel / House Name
-            </label>
-            <input
-              type="text"
-              name="hostelName"
-              value={formData.hostelName}
-              onChange={handleChange}
-              placeholder={
-                formData.residentialType === 'on-campus'
-                  ? 'e.g. Block A Room 14, Male Hostel'
-                  : 'e.g. Grace Hostel, Room 5'
-              }
-              className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Street / Area</label>
-            <input
-              type="text"
-              name="streetArea"
-              value={formData.streetArea}
-              onChange={handleChange}
-              placeholder="e.g. Butura Road, Behind Faculty of Law"
-              className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Nearest Landmark</label>
-            <input
-              type="text"
-              name="landmark"
-              value={formData.landmark}
-              onChange={handleChange}
-              placeholder="e.g. Opposite First Bank, Near PLASU Main Gate"
-              className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-            />
-          </div>
-
-          {/* Submit */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-green-700 hover:bg-green-800 text-white font-semibold py-3 rounded-lg transition-colors disabled:opacity-60 disabled:cursor-not-allowed mt-2"
-          >
-            {loading ? 'Creating account...' : 'Create Account'}
-          </button>
-
-          <p className="text-center text-sm text-gray-500 mt-4">
-            Already have an account?{' '}
-            <Link to="/login" className="text-green-700 font-medium hover:underline">
-              Log in
-            </Link>
-          </p>
-        </form>
+        </div>
       </div>
     </div>
   );
 };
-
-export default RegisterPage;
+export default Register;

@@ -1,210 +1,143 @@
-const jwt  = require('jsonwebtoken');
-const User = require('../models/User');
+const crypto = require("crypto");
+const User = require("../models/User");
+const generateToken = require("../utils/generateToken");
+const sendEmail = require("../utils/sendEmail");
 
-// ── Helper: sign JWT ──────────────────────────────────────────────────────────
-const signToken = (id) =>
-  jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN || '7d',
-  });
-
-// ── Helper: build safe user object (no password) ──────────────────────────────
-const safeUser = (user) => ({
-  _id:             user._id,
-  fullName:        user.fullName,
-  email:           user.email,
-  phoneNumber:     user.phoneNumber,
-  matricNumber:    user.matricNumber,
-  role:            user.role,
-  residentialType: user.residentialType,
-  hostelName:      user.hostelName,
-  streetArea:      user.streetArea,
-  landmark:        user.landmark,
-  createdAt:       user.createdAt,
-});
-
-// ── POST /api/auth/register ───────────────────────────────────────────────────
 const register = async (req, res) => {
+  const { name, email, password, phone, matricNumber, department, role } = req.body;
   try {
-    const {
-      fullName,
-      email,
-      password,
-      phoneNumber,
-      matricNumber,
-      // Address fields
-      residentialType,
-      hostelName,
-      streetArea,
-      landmark,
-    } = req.body;
-
-    // Basic validation
-    if (!fullName || !email || !password || !phoneNumber) {
-      return res.status(400).json({
-        message: 'Full name, email, phone number and password are required.',
-      });
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: "Name, email and password are required" });
     }
-
-    // Check duplicate email
-    const existing = await User.findOne({ email: email.toLowerCase() });
+    const existing = await User.findOne({ email });
     if (existing) {
-      return res.status(400).json({ message: 'An account with this email already exists.' });
+      return res.status(400).json({ message: "Email already registered" });
     }
-
     const user = await User.create({
-      fullName,
-      email,
-      password,
-      phoneNumber,
-      matricNumber:    matricNumber    || '',
-      residentialType: residentialType || 'on-campus',
-      hostelName:      hostelName      || '',
-      streetArea:      streetArea      || '',
-      landmark:        landmark        || '',
+      name, email, password,
+      phone: phone || "",
+      matricNumber: matricNumber || "",
+      department: department || "",
+      role: role || "student",
     });
-
-    const token = signToken(user._id);
-
-    res.status(201).json({
-      success: true,
-      message: 'Account created successfully.',
-      token,
-      user: safeUser(user),
-    });
-  } catch (error) {
-    console.error('register error:', error);
-    res.status(500).json({ message: 'Server error during registration.' });
+    const token = generateToken(user._id);
+    return res.status(201).json({ message: "Registration successful", data: { user, token } });
+  } catch (err) {
+    console.error("Register error:", err.message);
+    return res.status(500).json({ message: err.message });
   }
 };
 
-// ── POST /api/auth/login ──────────────────────────────────────────────────────
 const login = async (req, res) => {
+  const { email, password } = req.body;
   try {
-    const { email, password } = req.body;
-
     if (!email || !password) {
-      return res.status(400).json({ message: 'Email and password are required.' });
+      return res.status(400).json({ message: "Email and password are required" });
     }
-
-    // Explicitly select password (it's hidden by default)
-    const user = await User.findOne({ email: email.toLowerCase() }).select('+password');
-    if (!user) {
-      return res.status(401).json({ message: 'Invalid email or password.' });
+    const user = await User.findOne({ email });
+    if (!user || !(await user.matchPassword(password))) {
+      return res.status(401).json({ message: "Invalid email or password" });
     }
-
-    const isMatch = await user.matchPassword(password);
-    if (!isMatch) {
-      return res.status(401).json({ message: 'Invalid email or password.' });
-    }
-
-    if (!user.isActive) {
-      return res.status(403).json({ message: 'Your account has been deactivated. Contact admin.' });
-    }
-
-    const token = signToken(user._id);
-
-    res.status(200).json({
-      success: true,
-      message: 'Login successful.',
-      token,
-      user: safeUser(user),
-    });
-  } catch (error) {
-    console.error('login error:', error);
-    res.status(500).json({ message: 'Server error during login.' });
+    const token = generateToken(user._id);
+    return res.status(200).json({ message: "Login successful", data: { user, token } });
+  } catch (err) {
+    console.error("Login error:", err.message);
+    return res.status(500).json({ message: err.message });
   }
 };
 
-// ── GET /api/auth/me ──────────────────────────────────────────────────────────
 const getMe = async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id);
-    if (!user) {
-      return res.status(404).json({ message: 'User not found.' });
-    }
-
-    res.status(200).json({ success: true, user: safeUser(user) });
-  } catch (error) {
-    console.error('getMe error:', error);
-    res.status(500).json({ message: 'Server error fetching profile.' });
-  }
+  return res.status(200).json({ message: "Success", data: req.user });
 };
 
-// ── PUT /api/auth/profile ─────────────────────────────────────────────────────
-// Students and security officers can update their own profile.
-// Email and role cannot be changed here.
-const updateProfile = async (req, res) => {
+const logout = async (req, res) => {
+  return res.status(200).json({ message: "Logged out successfully", data: null });
+};
+
+// @route POST /api/auth/forgot-password
+const forgotPassword = async (req, res) => {
+  const { email } = req.body;
   try {
-    const {
-      fullName,
-      phoneNumber,
-      matricNumber,
-      // Address fields
-      residentialType,
-      hostelName,
-      streetArea,
-      landmark,
-    } = req.body;
+    if (!email) {
+      return res.status(400).json({ message: "Please provide your email address" });
+    }
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "No account found with that email address" });
+    }
 
-    const allowedUpdate = {
-      ...(fullName        && { fullName }),
-      ...(phoneNumber     && { phoneNumber }),
-      ...(matricNumber    !== undefined && { matricNumber }),
-      ...(residentialType && { residentialType }),
-      ...(hostelName      !== undefined && { hostelName }),
-      ...(streetArea      !== undefined && { streetArea }),
-      ...(landmark        !== undefined && { landmark }),
-    };
+    const resetToken = user.getResetPasswordToken();
+    await user.save({ validateBeforeSave: false });
 
-    const user = await User.findByIdAndUpdate(
-      req.user.id,
-      allowedUpdate,
-      { new: true, runValidators: true }
+    const resetUrl = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
+
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background-color: #dc2626; padding: 20px; text-align: center; border-radius: 8px 8px 0 0;">
+          <h1 style="color: white; margin: 0;">🛡 PLASU SafeApp</h1>
+        </div>
+        <div style="background-color: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px;">
+          <h2 style="color: #1f2937;">Password Reset Request</h2>
+          <p style="color: #4b5563;">Hi ${user.name},</p>
+          <p style="color: #4b5563;">You requested to reset your password. Click the button below to set a new password. This link expires in <strong>30 minutes</strong>.</p>
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${resetUrl}" 
+               style="background-color: #dc2626; color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+              Reset My Password
+            </a>
+          </div>
+          <p style="color: #6b7280; font-size: 13px;">If you did not request this, please ignore this email. Your password will remain unchanged.</p>
+          <p style="color: #6b7280; font-size: 13px;">Or copy this link: <a href="${resetUrl}" style="color: #dc2626;">${resetUrl}</a></p>
+          <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;">
+          <p style="color: #9ca3af; font-size: 12px; text-align: center;">PLASU Campus Safety App — Plateau State University, Bokkos</p>
+        </div>
+      </div>
+    `;
+
+    await sendEmail({ to: user.email, subject: "PLASU SafeApp — Password Reset Request", html });
+
+    return res.status(200).json({ message: "Password reset link sent to your email" });
+  } catch (err) {
+    console.error("Forgot password error:", err.message);
+    // Clear token if email fails
+    await User.findOneAndUpdate(
+      { email: req.body.email },
+      { resetPasswordToken: undefined, resetPasswordExpire: undefined }
     );
+    return res.status(500).json({ message: "Email could not be sent. Please try again." });
+  }
+};
+
+// @route POST /api/auth/reset-password/:token
+const resetPassword = async (req, res) => {
+  const { password } = req.body;
+  try {
+    if (!password || password.length < 6) {
+      return res.status(400).json({ message: "Password must be at least 6 characters" });
+    }
+
+    const hashedToken = crypto.createHash("sha256").update(req.params.token).digest("hex");
+
+    const user = await User.findOne({
+      resetPasswordToken: hashedToken,
+      resetPasswordExpire: { $gt: Date.now() },
+    });
 
     if (!user) {
-      return res.status(404).json({ message: 'User not found.' });
+      return res.status(400).json({ message: "Invalid or expired reset link. Please request a new one." });
     }
 
-    res.status(200).json({
-      success: true,
-      message: 'Profile updated successfully.',
-      user: safeUser(user),
-    });
-  } catch (error) {
-    console.error('updateProfile error:', error);
-    res.status(500).json({ message: 'Server error updating profile.' });
+    user.password = password;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+    await user.save();
+
+    const token = generateToken(user._id);
+    return res.status(200).json({ message: "Password reset successful", data: { user, token } });
+  } catch (err) {
+    console.error("Reset password error:", err.message);
+    return res.status(500).json({ message: err.message });
   }
 };
 
-// ── PUT /api/auth/change-password ─────────────────────────────────────────────
-const changePassword = async (req, res) => {
-  try {
-    const { currentPassword, newPassword } = req.body;
-
-    if (!currentPassword || !newPassword) {
-      return res.status(400).json({ message: 'Current and new passwords are required.' });
-    }
-
-    if (newPassword.length < 6) {
-      return res.status(400).json({ message: 'New password must be at least 6 characters.' });
-    }
-
-    const user = await User.findById(req.user.id).select('+password');
-    const isMatch = await user.matchPassword(currentPassword);
-
-    if (!isMatch) {
-      return res.status(401).json({ message: 'Current password is incorrect.' });
-    }
-
-    user.password = newPassword;
-    await user.save(); // triggers the pre-save bcrypt hook
-
-    res.status(200).json({ success: true, message: 'Password changed successfully.' });
-  } catch (error) {
-    console.error('changePassword error:', error);
-    res.status(500).json({ message: 'Server error changing password.' });
-  }
-};
-
-module.exports = { register, login, getMe, updateProfile, changePassword };
+module.exports = { register, login, getMe, logout, forgotPassword, resetPassword };

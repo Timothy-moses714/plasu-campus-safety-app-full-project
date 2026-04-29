@@ -21,12 +21,12 @@ const AdminIncidents = () => {
   const [selected, setSelected] = useState(null);
   const { user } = useAuth();
 
-  useEffect(() => { // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
     getIncidents(user.token)
       .then(res => { setIncidents(res.data || []); setFiltered(res.data || []); })
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     let data = [...incidents];
@@ -53,6 +53,7 @@ const AdminIncidents = () => {
           <p className="text-gray-400 text-sm mt-1">Manage all campus incident reports</p>
         </div>
 
+        {/* Filters */}
         <div className="flex flex-wrap gap-3">
           <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}
             className="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-500">
@@ -105,6 +106,7 @@ const AdminIncidents = () => {
           </div>
         )}
 
+        {/* Detail Modal */}
         {selected && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-black bg-opacity-70" onClick={() => setSelected(null)} />
