@@ -10,6 +10,7 @@ import ResetPassword from "../pages/ResetPassword";
 import RoutePlanner from "../pages/RoutePlanner";
 import ReportIncident from "../pages/ReportIncident";
 import Notifications from "../pages/Notifications";
+import Profile from "../pages/Profile";
 
 import AdminLogin from "../pages/admin/AdminLogin";
 import AdminDashboard from "../pages/admin/AdminDashboard";
@@ -17,13 +18,14 @@ import AdminPanics from "../pages/admin/AdminPanics";
 import AdminIncidents from "../pages/admin/AdminIncidents";
 import AdminAlerts from "../pages/admin/AdminAlerts";
 import AdminUsers from "../pages/admin/AdminUsers";
+import AdminRiskZones from "../pages/admin/AdminRiskZones";
 
 const AppRoutes = () => (
   <Routes>
-    {/* Student Public */}
-    <Route path="/login"           element={<Login />} />
-    <Route path="/register"        element={<Register />} />
-    <Route path="/forgot-password" element={<ForgotPassword />} />
+    {/* Public */}
+    <Route path="/login"                element={<Login />} />
+    <Route path="/register"             element={<Register />} />
+    <Route path="/forgot-password"      element={<ForgotPassword />} />
     <Route path="/reset-password/:token" element={<ResetPassword />} />
 
     {/* Student Protected */}
@@ -31,6 +33,7 @@ const AppRoutes = () => (
     <Route path="/route-planner" element={<PrivateRoute><RoutePlanner /></PrivateRoute>} />
     <Route path="/report"        element={<PrivateRoute><ReportIncident /></PrivateRoute>} />
     <Route path="/notifications" element={<PrivateRoute><Notifications /></PrivateRoute>} />
+    <Route path="/profile"       element={<PrivateRoute><Profile /></PrivateRoute>} />
 
     {/* Admin/Security */}
     <Route path="/admin/login"      element={<AdminLogin />} />
@@ -38,8 +41,8 @@ const AppRoutes = () => (
     <Route path="/admin/panics"     element={<AdminRoute><AdminPanics /></AdminRoute>} />
     <Route path="/admin/incidents"  element={<AdminRoute><AdminIncidents /></AdminRoute>} />
     <Route path="/admin/alerts"     element={<AdminRoute><AdminAlerts /></AdminRoute>} />
+    <Route path="/admin/riskzones"  element={<AdminRoute><AdminRiskZones /></AdminRoute>} />
     <Route path="/admin/users"      element={<AdminRoute><AdminUsers /></AdminRoute>} />
   </Routes>
 );
-
 export default AppRoutes;

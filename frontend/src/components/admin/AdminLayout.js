@@ -6,6 +6,7 @@ const navItems = [
   { to: "/admin/panics", icon: "🚨", label: "Panic Alerts" },
   { to: "/admin/incidents", icon: "📋", label: "Incidents" },
   { to: "/admin/alerts", icon: "📢", label: "Campus Alerts" },
+  { to: "/admin/riskzones", icon: "🤖", label: "ML Risk Zones" },
   { to: "/admin/users", icon: "👥", label: "Users" },
 ];
 
@@ -13,16 +14,11 @@ const AdminLayout = ({ children }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
-    navigate("/admin/login");
-  };
+  const handleLogout = () => { logout(); navigate("/admin/login"); };
 
   return (
     <div className="min-h-screen bg-gray-900 flex">
-      {/* Sidebar */}
       <aside className="w-64 bg-gray-800 border-r border-gray-700 flex-col fixed h-full hidden md:flex">
-        {/* Sidebar header with campus image */}
         <div className="relative h-32 overflow-hidden">
           <img src="/images/campus-gate-2.jpg" alt="PLASU" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gray-900 bg-opacity-70 flex items-center p-4 gap-3">
@@ -42,10 +38,8 @@ const AdminLayout = ({ children }) => {
                 `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition ${
                   isActive ? "bg-red-600 text-white" : "text-gray-400 hover:bg-gray-700 hover:text-white"
                 }`
-              }
-            >
-              <span>{icon}</span>
-              <span>{label}</span>
+              }>
+              <span>{icon}</span><span>{label}</span>
             </NavLink>
           ))}
         </nav>
@@ -67,7 +61,6 @@ const AdminLayout = ({ children }) => {
         </div>
       </aside>
 
-      {/* Mobile top nav */}
       <div className="md:hidden fixed top-0 left-0 w-full bg-gray-800 border-b border-gray-700 z-40 px-4 py-2 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <img src="/images/plasu-logo.png" alt="PLASU" className="w-7 h-7 object-contain rounded-full bg-white p-0.5" />
@@ -76,23 +69,20 @@ const AdminLayout = ({ children }) => {
         <button onClick={handleLogout} className="text-gray-400 text-sm">Logout</button>
       </div>
 
-      {/* Mobile bottom nav */}
-      <nav className="md:hidden fixed bottom-0 left-0 w-full bg-gray-800 border-t border-gray-700 z-40 flex justify-around py-2">
+      <nav className="md:hidden fixed bottom-0 left-0 w-full bg-gray-800 border-t border-gray-700 z-40 flex justify-around py-1">
         {navItems.map(({ to, icon, label }) => (
           <NavLink key={to} to={to}
             className={({ isActive }) =>
-              `flex flex-col items-center gap-1 px-2 py-1 rounded-lg text-xs ${
+              `flex flex-col items-center gap-0.5 px-1 py-1 rounded-lg text-xs ${
                 isActive ? "text-red-400 font-bold" : "text-gray-500"
               }`
-            }
-          >
-            <span className="text-lg">{icon}</span>
-            <span className="text-[10px]">{label}</span>
+            }>
+            <span className="text-base">{icon}</span>
+            <span className="text-[9px]">{label}</span>
           </NavLink>
         ))}
       </nav>
 
-      {/* Main content */}
       <main className="flex-1 md:ml-64 pt-14 md:pt-0 pb-20 md:pb-0 min-h-screen">
         <div className="p-4 sm:p-6 md:p-8">{children}</div>
       </main>

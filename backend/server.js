@@ -9,17 +9,18 @@ connectDB();
 const app = express();
 
 app.use(cors({
-  origin: "*",
-  credentials: false,
+  origin: process.env.CLIENT_URL || "http://localhost:3000",
+  credentials: true,
 }));
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
-app.use("/api/auth",      require("./routes/authRoutes"));
-app.use("/api/alerts",    require("./routes/alertRoutes"));
-app.use("/api/incidents", require("./routes/incidentRoutes"));
-app.use("/api/users",     require("./routes/userRoutes"));
+app.use("/api/auth",       require("./routes/authRoutes"));
+app.use("/api/alerts",     require("./routes/alertRoutes"));
+app.use("/api/incidents",  require("./routes/incidentRoutes"));
+app.use("/api/users",      require("./routes/userRoutes"));
+app.use("/api/riskzones",  require("./routes/riskZoneRoutes"));
 
 app.get("/", (req, res) => res.json({ message: "PLASU SafeApp API is running" }));
 

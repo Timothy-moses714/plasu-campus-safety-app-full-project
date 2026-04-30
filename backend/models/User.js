@@ -7,10 +7,12 @@ const userSchema = new mongoose.Schema(
     name:               { type: String, required: true, trim: true },
     email:              { type: String, required: true, unique: true, lowercase: true, trim: true },
     password:           { type: String, required: true, minlength: 6 },
-    phone:              { type: String, default: "" },
+    phone:              { type: String, default: "", unique: true, sparse: true },
     role:               { type: String, enum: ["student", "security", "admin"], default: "student" },
-    matricNumber:       { type: String, default: "" },
+    matricNumber:       { type: String, default: "", unique: true, sparse: true },
     department:         { type: String, default: "" },
+    address:            { type: String, default: "" },
+    profilePicture:     { type: String, default: "" },
     isActive:           { type: Boolean, default: true },
     resetPasswordToken: { type: String },
     resetPasswordExpire:{ type: Date },
@@ -30,7 +32,7 @@ userSchema.methods.matchPassword = async function (enteredPassword) {
 userSchema.methods.getResetPasswordToken = function () {
   const resetToken = crypto.randomBytes(32).toString("hex");
   this.resetPasswordToken = crypto.createHash("sha256").update(resetToken).digest("hex");
-  this.resetPasswordExpire = Date.now() + 30 * 60 * 1000; // 30 minutes
+  this.resetPasswordExpire = Date.now() + 30 * 60 * 1000;
   return resetToken;
 };
 
