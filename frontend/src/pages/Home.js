@@ -3,6 +3,7 @@ import PanicButton from "../components/alerts/PanicButton";
 import Navbar from "../components/layout/Navbar";
 import BottomNav from "../components/layout/BottomNav";
 import AlertBanner from "../components/alerts/AlertBanner";
+import Profile from "../pages/Profile";
 import { Link } from "react-router-dom";
 
 const quickLinks = [
