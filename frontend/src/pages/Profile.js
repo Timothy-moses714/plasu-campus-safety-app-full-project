@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Navbar from "../components/layout/Navbar";
 import BottomNav from "../components/layout/BottomNav";
 import Spinner from "../components/common/Spinner";
@@ -9,7 +9,6 @@ const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
 
 const Profile = () => {
   const { user, login } = useAuth();
-  const navigate = useNavigate();
   const fileRef = useRef(null);
 
   const [form, setForm] = useState({
