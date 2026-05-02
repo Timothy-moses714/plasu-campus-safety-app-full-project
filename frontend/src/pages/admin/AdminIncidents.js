@@ -26,7 +26,7 @@ const AdminIncidents = () => {
       .then(res => { setIncidents(res.data || []); setFiltered(res.data || []); })
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     let data = [...incidents];
@@ -53,7 +53,6 @@ const AdminIncidents = () => {
           <p className="text-gray-400 text-sm mt-1">Manage all campus incident reports</p>
         </div>
 
-        {/* Filters */}
         <div className="flex flex-wrap gap-3">
           <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}
             className="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-500">
@@ -84,8 +83,7 @@ const AdminIncidents = () => {
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {filtered.map((inc) => (
-              <div key={inc._id}
-                onClick={() => setSelected(inc)}
+              <div key={inc._id} onClick={() => setSelected(inc)}
                 className="bg-gray-800 border border-gray-700 hover:border-gray-500 rounded-2xl p-5 cursor-pointer transition">
                 <div className="flex items-start justify-between gap-2 mb-3">
                   <p className="text-white font-bold text-sm">{inc.title}</p>
@@ -93,9 +91,7 @@ const AdminIncidents = () => {
                     {inc.status}
                   </span>
                 </div>
-                <p className="text-gray-400 text-xs mb-2 capitalize">
-                  🏷 {inc.type?.replace(/_/g, " ")}
-                </p>
+                <p className="text-gray-400 text-xs mb-2 capitalize">🏷 {inc.type?.replace(/_/g, " ")}</p>
                 <p className="text-gray-500 text-xs line-clamp-2">{inc.description}</p>
                 <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-700">
                   <p className="text-gray-400 text-xs">👤 {inc.reportedBy?.name || "Unknown"}</p>
@@ -106,7 +102,6 @@ const AdminIncidents = () => {
           </div>
         )}
 
-        {/* Detail Modal */}
         {selected && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-black bg-opacity-70" onClick={() => setSelected(null)} />
@@ -125,7 +120,8 @@ const AdminIncidents = () => {
                   <p className="text-gray-400 text-xs">👤 <span className="text-white">{selected.reportedBy?.name}</span></p>
                   <p className="text-gray-400 text-xs">🎓 <span className="text-white">{selected.reportedBy?.matricNumber}</span></p>
                   <p className="text-gray-400 text-xs">🏫 <span className="text-white">{selected.reportedBy?.department}</span></p>
-                  <p className="text-gray-400 text-xs">📍 Lat: {selected.location?.lat?.toFixed(5)}, Lng: {selected.location?.lng?.toFixed(5)}</p>
+                  <p className="text-gray-400 text-xs">🏠 <span className="text-yellow-300">{selected.reportedBy?.address || "N/A"}</span></p>
+                  <p className="text-gray-400 text-xs">📍 {selected.location?.lat?.toFixed(5)}, {selected.location?.lng?.toFixed(5)}</p>
                   <p className="text-gray-400 text-xs">⏱ {timeAgo(selected.createdAt)}</p>
                 </div>
                 <div className="flex gap-2 pt-2">

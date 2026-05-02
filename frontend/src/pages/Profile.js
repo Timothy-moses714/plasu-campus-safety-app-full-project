@@ -32,7 +32,6 @@ const Profile = () => {
   const handleChange = (e) => setForm(p => ({ ...p, [e.target.name]: e.target.value }));
   const handlePwChange = (e) => setPasswords(p => ({ ...p, [e.target.name]: e.target.value }));
 
-  // Convert image to base64
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -159,7 +158,6 @@ const Profile = () => {
               </div>
             ))}
 
-            {/* Read-only fields */}
             <div className="bg-gray-50 rounded-xl p-3 space-y-2">
               <p className="text-xs text-gray-500">📧 Email: <span className="text-gray-700 font-medium">{user?.email}</span></p>
               <p className="text-xs text-gray-500">🎓 Matric: <span className="text-gray-700 font-medium">{user?.matricNumber}</span></p>
@@ -214,6 +212,10 @@ const Profile = () => {
             </button>
           </div>
         )}
+
+        <Link to="/" className="block text-center text-xs text-gray-400 hover:text-red-600 pb-4">
+          ← Back to Home
+        </Link>
       </div>
       <BottomNav />
     </div>
