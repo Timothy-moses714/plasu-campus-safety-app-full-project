@@ -11,30 +11,18 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const stored = localStorage.getItem("plasu_user");
     if (stored) {
-      const parsed = JSON.parse(stored);
-      setUser(parsed);
-      setIsAuthenticated(true);
+      try {
+        const parsed = JSON.parse(stored);
+        if (parsed && parsed.token) { setUser(parsed); setIsAuthenticated(true); }
+      } catch { localStorage.removeItem("plasu_user"); }
     }
     setLoading(false);
   }, []);
 
-  const login = (userData) => {
-    setUser(userData);
-    setIsAuthenticated(true);
-    localStorage.setItem("plasu_user", JSON.stringify(userData));
-  };
+  const login = (userData) => { setUser(userData); setIsAuthenticated(true); localStorage.setItem("plasu_user", JSON.stringify(userData)); };
+  const logout = () => { setUser({ ...UserModel }); setIsAuthenticated(false); localStorage.removeItem("plasu_user"); };
 
-  const logout = () => {
-    setUser({ ...UserModel });
-    setIsAuthenticated(false);
-    localStorage.removeItem("plasu_user");
-  };
-
-  return (
-    <AuthContext.Provider value={{ user, isAuthenticated, loading, login, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={{ user, isAuthenticated, loading, login, logout }}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => useContext(AuthContext);

@@ -45,8 +45,9 @@ const AdminPanics = () => {
             <h1 className="text-xl sm:text-2xl font-bold text-white">🚨 Panic Alerts</h1>
             <p className="text-gray-400 text-sm mt-1">All emergency panic alerts from students</p>
           </div>
-          <button onClick={fetchPanics} className="bg-gray-700 hover:bg-gray-600 text-white text-sm px-4 py-2 rounded-lg transition">
-            Refresh
+          <button onClick={fetchPanics}
+            className="bg-gray-700 hover:bg-gray-600 text-white text-sm px-4 py-2 rounded-lg transition">
+            🔄 Refresh
           </button>
         </div>
 
@@ -60,25 +61,33 @@ const AdminPanics = () => {
         ) : (
           <div className="space-y-4">
             {panics.map((panic) => (
-              <div key={panic._id} className={`bg-gray-800 border rounded-2xl p-5 ${panic.status === "active" ? "border-red-600" : "border-gray-700"}`}>
+              <div key={panic._id} className={`bg-gray-800 border rounded-2xl p-5 ${
+                panic.status === "active" ? "border-red-600" : "border-gray-700"
+              }`}>
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-                  <div className="space-y-1">
+                  <div className="space-y-1.5">
                     {panic.status === "active" && (
                       <span className="inline-block bg-red-600 text-white text-xs px-2 py-0.5 rounded-full font-bold animate-pulse mb-2">
-                        🚨 ACTIVE
+                        🚨 ACTIVE EMERGENCY
                       </span>
                     )}
                     <p className="text-white font-bold text-lg">{panic.triggeredBy?.name || "Unknown Student"}</p>
-                    <p className="text-gray-400 text-sm">📱 {panic.triggeredBy?.phone || "N/A"}</p>
+                    <p className="text-gray-400 text-sm">📱 <span className="text-white font-semibold">{panic.triggeredBy?.phone || "N/A"}</span></p>
                     <p className="text-gray-400 text-sm">🎓 {panic.triggeredBy?.matricNumber || "N/A"}</p>
                     <p className="text-gray-400 text-sm">🏫 {panic.triggeredBy?.department || "N/A"}</p>
-                    <p className="text-gray-400 text-sm">📍 Lat: {panic.location?.lat?.toFixed(5)}, Lng: {panic.location?.lng?.toFixed(5)}</p>
+                    <p className="text-gray-400 text-sm">🏠 <span className="text-yellow-300 font-semibold">{panic.triggeredBy?.address || "No address provided"}</span></p>
+                    <p className="text-gray-400 text-sm">📍 GPS: {panic.location?.lat?.toFixed(5)}, {panic.location?.lng?.toFixed(5)}</p>
+                    <a href={`https://maps.google.com/?q=${panic.location?.lat},${panic.location?.lng}`}
+                      target="_blank" rel="noopener noreferrer"
+                      className="inline-block bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-1 rounded-lg transition mt-1">
+                      📍 View on Google Maps
+                    </a>
                     <p className="text-gray-500 text-xs">⏱ {timeAgo(panic.createdAt)}</p>
                   </div>
-                  <div className="flex flex-row sm:flex-col gap-2">
+                  <div className="flex flex-row sm:flex-col gap-2 shrink-0">
                     {panic.status === "active" && (
                       <button onClick={() => handleUpdate(panic._id, "responded")} disabled={updating === panic._id}
-                        className="bg-green-600 hover:bg-green-700 text-white text-sm px-4 py-2 rounded-lg transition disabled:opacity-50">
+                        className="bg-green-600 hover:bg-green-700 text-white text-sm px-4 py-2 rounded-lg transition disabled:opacity-50 font-semibold">
                         {updating === panic._id ? "..." : "✓ Responded"}
                       </button>
                     )}
@@ -89,9 +98,9 @@ const AdminPanics = () => {
                       </button>
                     )}
                     {panic.status !== "active" && (
-                      <span className={`text-xs px-3 py-1 rounded-full font-semibold text-center ${panic.status === "responded" ? "bg-green-900 text-green-300" : "bg-gray-700 text-gray-300"}`}>
-                        {panic.status}
-                      </span>
+                      <span className={`text-xs px-3 py-1 rounded-full font-semibold text-center ${
+                        panic.status === "responded" ? "bg-green-900 text-green-300" : "bg-gray-700 text-gray-300"
+                      }`}>{panic.status}</span>
                     )}
                   </div>
                 </div>

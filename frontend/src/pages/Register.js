@@ -6,7 +6,7 @@ import Spinner from "../components/common/Spinner";
 import UserModel from "../models/User";
 
 const Register = () => {
-  const [formData, setFormData] = useState({ ...UserModel, password: "" });
+  const [formData, setFormData] = useState({ ...UserModel, password: "", address: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -25,8 +25,8 @@ const Register = () => {
       const token = data.data?.token || data.token;
       login({ ...user, token });
       navigate("/");
-    } catch {
-      setError("Registration failed. Please try again.");
+    } catch (err) {
+      setError(err.message || "Registration failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -35,14 +35,14 @@ const Register = () => {
   const fields = [
     { name: "name", label: "Full Name", type: "text", placeholder: "John Doe" },
     { name: "email", label: "Email", type: "email", placeholder: "you@plasu.edu.ng" },
-    { name: "matricNumber", label: "Matric Number", type: "text", placeholder: "PLU/CSC/2021/001" },
-    { name: "department", label: "Department", type: "text", placeholder: "Computer Science" },
-    { name: "phone", label: "Phone", type: "tel", placeholder: "08012345678" },
+    { name: "matricNumber", label: "Matric Number", type: "text", placeholder: "PLASU/2021/FNAS/0001" },
+    { name: "department", label: "Department/Faculty", type: "text", placeholder: "Computer Science" },
+    { name: "phone", label: "Phone Number", type: "tel", placeholder: "08012345678" },
+    { name: "address", label: "Home/Hostel Address", type: "text", placeholder: "e.g. Block A Room 12, Male Hostel" },
   ];
 
   return (
     <div className="min-h-screen flex">
-      {/* Left - Campus image */}
       <div className="hidden lg:flex lg:w-1/2 relative">
         <img src="/images/senate-building.jpg" alt="PLASU Senate" className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-red-900 bg-opacity-60 flex flex-col justify-end p-10">
@@ -55,7 +55,6 @@ const Register = () => {
         </div>
       </div>
 
-      {/* Right - Form */}
       <div className="w-full lg:w-1/2 bg-gray-50 flex items-center justify-center px-4 py-8">
         <div className="w-full max-w-md">
           <div className="flex items-center justify-center gap-3 mb-6 lg:hidden">
@@ -85,6 +84,10 @@ const Register = () => {
                   />
                 </div>
               ))}
+
+              <p className="text-xs text-gray-400">
+                📝 Matric format: PLASU/YEAR/FACULTY/NUMBER (e.g. PLASU/2021/FNAS/0001, PLASU/2020/FSS/0011)
+              </p>
 
               <div>
                 <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Password</label>

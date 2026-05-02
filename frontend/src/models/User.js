@@ -1,13 +1,2 @@
-const UserModel = {
-  id: null,
-  name: "",
-  email: "",
-  phone: "",
-  role: "student", // "student" | "security" | "admin"
-  token: null,
-  matricNumber: "",
-  department: "",
-  createdAt: null,
-};
-
+const UserModel = { id: null, name: "", email: "", phone: "", role: "student", token: null, matricNumber: "", department: "", address: "", profilePicture: "" };
 export default UserModel;
