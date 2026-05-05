@@ -35,7 +35,6 @@ const AdminPanics = () => {
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(null);
   const [soundEnabled, setSoundEnabled] = useState(true);
-  const [newAlertCount, setNewAlertCount] = useState(0);
   const prevActiveCount = useRef(0);
   const { user } = useAuth();
 
