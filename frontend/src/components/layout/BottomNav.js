@@ -13,7 +13,7 @@ const BottomNav = () => (
     {navItems.map(({ to, label, icon }) => (
       <NavLink key={to} to={to}
         className={({ isActive }) =>
-          `flex flex-col items-center gap-1 px-2 py-1 rounded-lg transition min-w-[50px] ${
+          `flex flex-col items-center gap-0.5 px-2 py-1 rounded-lg transition min-w-[50px] ${
             isActive ? "text-red-600 font-bold" : "text-gray-500"
           }`
         }

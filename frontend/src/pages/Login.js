@@ -29,8 +29,8 @@ const Login = () => {
       }
       login({ ...user, token });
       navigate("/");
-    } catch {
-      setError("Invalid email or password. Please try again.");
+    } catch (err) {
+      setError(err.message || "Invalid email or password. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -38,93 +38,103 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex">
-      {/* Left side - Campus image */}
+      {/* Left - Image with overlay */}
       <div className="hidden lg:flex lg:w-1/2 relative">
-        <img
-          src="/images/plasu-gate-2.jpg"
-          alt="PLASU Campus Gate"
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-red-900 bg-opacity-60 flex flex-col justify-end p-10">
-          <img src="/images/plasu-logo.png" alt="PLASU Logo" className="w-20 h-20 object-contain mb-4" />
-          <h2 className="text-white text-3xl font-bold leading-tight">
-            Plateau State University
-          </h2>
-          <p className="text-red-200 text-lg mt-1">Bokkos Campus Safety App</p>
-          <p className="text-red-300 text-sm mt-3 max-w-sm">
-            Keeping students safe with real-time emergency alerts and smart route guidance.
+        <img src="/images/campus-gate.jpg" alt="PLASU Campus" className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-br from-red-900 via-red-800 to-gray-900 opacity-80" />
+        <div className="absolute inset-0 flex flex-col justify-end p-10">
+          <img src="/images/plasu-logo.png" alt="PLASU Logo"
+            className="w-20 h-20 object-contain rounded-full bg-white bg-opacity-20 p-2 mb-6 border-2 border-white border-opacity-30" />
+          <h2 className="text-white text-3xl font-bold leading-tight">Welcome Back to</h2>
+          <h2 className="text-red-300 text-3xl font-bold">PLASU SafeApp</h2>
+          <p className="text-gray-300 text-sm mt-3 max-w-sm leading-relaxed">
+            Your campus safety companion. Emergency alerts, safe routes and incident reporting — all in one place.
           </p>
+          <div className="flex gap-4 mt-6">
+            <div className="bg-white bg-opacity-10 rounded-xl p-3 text-center border border-white border-opacity-20">
+              <p className="text-white font-bold text-lg">🛡</p>
+              <p className="text-gray-300 text-xs mt-1">Emergency Alerts</p>
+            </div>
+            <div className="bg-white bg-opacity-10 rounded-xl p-3 text-center border border-white border-opacity-20">
+              <p className="text-white font-bold text-lg">🗺</p>
+              <p className="text-gray-300 text-xs mt-1">Safe Routes</p>
+            </div>
+            <div className="bg-white bg-opacity-10 rounded-xl p-3 text-center border border-white border-opacity-20">
+              <p className="text-white font-bold text-lg">📋</p>
+              <p className="text-gray-300 text-xs mt-1">Report Incidents</p>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Right side - Login form */}
-      <div className="w-full lg:w-1/2 bg-gray-50 flex items-center justify-center px-4 py-8">
+      {/* Right - Dark form */}
+      <div className="w-full lg:w-1/2 bg-gray-900 flex items-center justify-center px-4 py-8 min-h-screen">
         <div className="w-full max-w-md">
           {/* Mobile logo */}
-          <div className="flex items-center justify-center gap-3 mb-6 lg:hidden">
-            <img src="/images/plasu-logo.png" alt="PLASU Logo" className="w-12 h-12 object-contain" />
+          <div className="flex items-center justify-center gap-3 mb-8 lg:hidden">
+            <img src="/images/plasu-logo.png" alt="PLASU Logo"
+              className="w-14 h-14 object-contain rounded-full bg-red-600 p-1.5" />
             <div>
-              <h1 className="text-lg font-bold text-gray-800">PLASU SafeApp</h1>
-              <p className="text-xs text-gray-500">Campus Safety System</p>
+              <h1 className="text-xl font-bold text-white">PLASU SafeApp</h1>
+              <p className="text-xs text-gray-400">Campus Safety System</p>
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8">
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-1">Welcome Back</h2>
-            <p className="text-gray-500 text-xs sm:text-sm mb-6">Sign in to your student account</p>
+          <div className="mb-8 hidden lg:block">
+            <h2 className="text-2xl font-bold text-white">Sign In</h2>
+            <p className="text-gray-400 text-sm mt-1">Access your student safety portal</p>
+          </div>
 
-            {error && (
-              <div className="bg-red-50 text-red-600 text-xs sm:text-sm p-3 rounded-lg mb-4">{error}</div>
-            )}
+          {error && (
+            <div className="bg-red-900 border border-red-700 text-red-200 text-xs sm:text-sm p-3 rounded-xl mb-4">
+              {error}
+            </div>
+          )}
 
-            <div className="space-y-4">
-              <div>
-                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Email</label>
-                <input
-                  type="email" value={email} onChange={(e) => setEmail(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-red-500"
-                  placeholder="you@plasu.edu.ng"
-                />
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-1.5">Email Address</label>
+              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+                className="w-full bg-gray-800 border border-gray-700 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent placeholder-gray-500"
+                placeholder="you@plasu.edu.ng" />
+            </div>
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-sm font-medium text-gray-300">Password</label>
+                <Link to="/forgot-password" className="text-xs text-red-400 hover:text-red-300 font-medium">
+                  Forgot Password?
+                </Link>
               </div>
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <label className="block text-xs sm:text-sm font-medium text-gray-700">Password</label>
-                  <Link to="/forgot-password" className="text-xs text-red-600 hover:underline font-medium">
-                    Forgot Password?
-                  </Link>
-                </div>
-                <div className="relative">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    value={password} onChange={(e) => setPassword(e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 pr-10 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-red-500"
-                    placeholder="••••••••"
-                  />
-                  <button type="button" onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-lg">
-                    {showPassword ? "👁" : "👁"}
-                  </button>
-                </div>
+              <div className="relative">
+                <input type={showPassword ? "text" : "password"} value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full bg-gray-800 border border-gray-700 text-white rounded-xl px-4 py-3 pr-11 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent placeholder-gray-500"
+                  placeholder="••••••••" />
+                <button type="button" onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200 text-lg">
+                  {showPassword ? "🙈" : "👁"}
+                </button>
               </div>
-              <button onClick={handleSubmit} disabled={loading}
-                className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg transition disabled:opacity-50 flex items-center justify-center">
-                {loading ? <Spinner size="sm" color="white" /> : "Sign In"}
-              </button>
             </div>
 
-            <p className="text-center text-xs sm:text-sm text-gray-500 mt-4">
-              No account?{" "}
-              <Link to="/register" className="text-red-600 font-semibold hover:underline">Register</Link>
-            </p>
+            <button onClick={handleSubmit} disabled={loading}
+              className="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-3 rounded-xl transition-all duration-200 disabled:opacity-50 flex items-center justify-center gap-2 mt-2">
+              {loading ? <Spinner size="sm" color="white" /> : <>Sign In <span>→</span></>}
+            </button>
+          </div>
 
-            <div className="mt-6 pt-5 border-t border-gray-100">
-              <p className="text-center text-xs text-gray-400 mb-3">Are you Admin or Security Staff?</p>
-              <Link to="/admin/login"
-                className="flex items-center justify-center gap-2 w-full border border-gray-300 hover:border-red-400 hover:bg-red-50 text-gray-600 hover:text-red-600 text-sm font-semibold py-2.5 rounded-lg transition">
-                <span>🛡</span>
-                <span>Login as Admin / Security</span>
-              </Link>
-            </div>
+          <p className="text-center text-sm text-gray-500 mt-6">
+            Don't have an account?{" "}
+            <Link to="/register" className="text-red-400 font-semibold hover:text-red-300">Create Account</Link>
+          </p>
+
+          <div className="mt-8 pt-6 border-t border-gray-800">
+            <p className="text-center text-xs text-gray-600 mb-3">Staff or Security Officer?</p>
+            <Link to="/admin/login"
+              className="flex items-center justify-center gap-2 w-full border border-gray-700 hover:border-red-600 hover:bg-gray-800 text-gray-400 hover:text-red-400 text-sm font-semibold py-3 rounded-xl transition-all duration-200">
+              <span>🛡</span>
+              <span>Admin / Security Portal</span>
+            </Link>
           </div>
         </div>
       </div>
