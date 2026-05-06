@@ -5,7 +5,6 @@ import { useAuth } from "../../context/AuthContext";
 import { timeAgo } from "../../utils/formatDate";
 import Spinner from "../../components/common/Spinner";
 
-// Generate alert sound using Web Audio API
 const playAlertSound = () => {
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -21,7 +20,6 @@ const playAlertSound = () => {
       osc.start(ctx.currentTime + start);
       osc.stop(ctx.currentTime + start + duration);
     };
-    // Play 3 urgent beeps
     playBeep(880, 0, 0.15);
     playBeep(880, 0.2, 0.15);
     playBeep(1100, 0.4, 0.3);
@@ -45,13 +43,9 @@ const AdminPanics = () => {
       const list = Array.isArray(data) ? data : [];
       setPanics(list);
 
-      // Check for new active panics and play sound
       const activeCount = list.filter(p => p.status === "active").length;
       if (activeCount > prevActiveCount.current && prevActiveCount.current >= 0) {
-        const newOnes = activeCount - prevActiveCount.current;
-        setNewAlertCount(prev => prev + newOnes);
         if (soundEnabled) playAlertSound();
-        // Browser notification
         if (Notification.permission === "granted") {
           new Notification("🚨 PLASU SafeApp - New Panic Alert!", {
             body: `A student needs help! ${activeCount} active panic alert(s).`,
@@ -69,11 +63,9 @@ const AdminPanics = () => {
 
   useEffect(() => {
     fetchPanics();
-    // Request notification permission
     if (Notification.permission === "default") {
       Notification.requestPermission();
     }
-    // Auto-refresh every 10 seconds
     const interval = setInterval(fetchPanics, 10000);
     return () => clearInterval(interval);
   }, [fetchPanics]);
@@ -83,7 +75,6 @@ const AdminPanics = () => {
     try {
       await updatePanicStatus(id, status, user.token);
       setPanics(prev => prev.map(p => (p._id === id ? { ...p, status } : p)));
-      if (status === "responded") setNewAlertCount(prev => Math.max(0, prev - 1));
     } catch {
       alert("Failed to update status");
     } finally {
@@ -97,7 +88,6 @@ const AdminPanics = () => {
   return (
     <AdminLayout>
       <div className="space-y-6">
-        {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <div className="flex items-center gap-3">
@@ -121,10 +111,9 @@ const AdminPanics = () => {
           </div>
         </div>
 
-        {/* Sound info banner */}
         <div className="bg-gray-800 border border-gray-700 rounded-xl p-3 text-xs text-gray-400 flex items-center gap-2">
           <span>ℹ️</span>
-          <span>Sound alerts and browser notifications are enabled. Page auto-refreshes every 10 seconds for real-time updates.</span>
+          <span>Sound alerts and browser notifications enabled. Auto-refreshes every 10 seconds.</span>
         </div>
 
         {loading ? (
@@ -136,7 +125,6 @@ const AdminPanics = () => {
           </div>
         ) : (
           <div className="space-y-6">
-            {/* Active Panics */}
             {activePanics.length > 0 && (
               <div>
                 <h2 className="text-red-400 font-bold text-sm mb-3 flex items-center gap-2">
@@ -145,17 +133,17 @@ const AdminPanics = () => {
                 </h2>
                 <div className="space-y-4">
                   {activePanics.map((panic) => (
-                    <div key={panic._id} className="bg-gray-800 border-2 border-red-600 rounded-2xl p-5 shadow-lg shadow-red-900/20">
+                    <div key={panic._id} className="bg-gray-800 border-2 border-red-600 rounded-2xl p-5">
                       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                         <div className="space-y-1.5">
                           <span className="inline-block bg-red-600 text-white text-xs px-2 py-0.5 rounded-full font-bold animate-pulse mb-2">
                             🚨 ACTIVE EMERGENCY
                           </span>
                           <p className="text-white font-bold text-lg">{panic.triggeredBy?.name || "Unknown"}</p>
-                          <p className="text-gray-400 text-sm">📱 <span className="text-white font-bold text-base">{panic.triggeredBy?.phone || "N/A"}</span></p>
+                          <p className="text-gray-400 text-sm">📱 <span className="text-white font-bold">{panic.triggeredBy?.phone || "N/A"}</span></p>
                           <p className="text-gray-400 text-sm">🎓 {panic.triggeredBy?.matricNumber || "N/A"}</p>
                           <p className="text-gray-400 text-sm">🏫 {panic.triggeredBy?.department || "N/A"}</p>
-                          <p className="text-gray-400 text-sm">🏠 <span className="text-yellow-300 font-semibold">{panic.triggeredBy?.address || "No address provided"}</span></p>
+                          <p className="text-gray-400 text-sm">🏠 <span className="text-yellow-300 font-semibold">{panic.triggeredBy?.address || "No address"}</span></p>
                           <p className="text-gray-400 text-sm">📍 GPS: {panic.location?.lat?.toFixed(5)}, {panic.location?.lng?.toFixed(5)}</p>
                           <a href={`https://maps.google.com/?q=${panic.location?.lat},${panic.location?.lng}`}
                             target="_blank" rel="noopener noreferrer"
@@ -181,7 +169,6 @@ const AdminPanics = () => {
               </div>
             )}
 
-            {/* Resolved Panics */}
             {resolvedPanics.length > 0 && (
               <div>
                 <h2 className="text-gray-500 font-bold text-sm mb-3">Past Alerts ({resolvedPanics.length})</h2>
