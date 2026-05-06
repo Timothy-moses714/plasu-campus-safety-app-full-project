@@ -39,33 +39,57 @@ const Login = () => {
   return (
     <div className="min-h-screen flex">
       {/* Left - Image with overlay */}
-      <div className="hidden lg:flex lg:w-1/2 relative">
-        <img src="/images/campus-gate.jpg" alt="PLASU Campus" className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-br from-red-900 via-red-800 to-gray-900 opacity-80" />
-        <div className="absolute inset-0 flex flex-col justify-end p-10">
-          <img src="/images/plasu-logo.png" alt="PLASU Logo"
-            className="w-20 h-20 object-contain rounded-full bg-white bg-opacity-20 p-2 mb-6 border-2 border-white border-opacity-30" />
-          <h2 className="text-white text-3xl font-bold leading-tight">Welcome Back to</h2>
-          <h2 className="text-red-300 text-3xl font-bold">PLASU SafeApp</h2>
-          <p className="text-gray-300 text-sm mt-3 max-w-sm leading-relaxed">
-            Your campus safety companion. Emergency alerts, safe routes and incident reporting — all in one place.
-          </p>
-          <div className="flex gap-4 mt-6">
-            <div className="bg-white bg-opacity-10 rounded-xl p-3 text-center border border-white border-opacity-20">
-              <p className="text-white font-bold text-lg">🛡</p>
-              <p className="text-gray-300 text-xs mt-1">Emergency Alerts</p>
-            </div>
-            <div className="bg-white bg-opacity-10 rounded-xl p-3 text-center border border-white border-opacity-20">
-              <p className="text-white font-bold text-lg">🗺</p>
-              <p className="text-gray-300 text-xs mt-1">Safe Routes</p>
-            </div>
-            <div className="bg-white bg-opacity-10 rounded-xl p-3 text-center border border-white border-opacity-20">
-              <p className="text-white font-bold text-lg">📋</p>
-              <p className="text-gray-300 text-xs mt-1">Report Incidents</p>
-            </div>
-          </div>
+      <div className="min-h-screen flex">
+  {/* Left - Image */}
+  <div className="hidden lg:flex lg:w-1/2 relative">
+    
+    {/* Background Image */}
+    <img
+      src="/images/campus-gate.jpg"
+      alt="PLASU Campus"
+      className="w-full h-full object-cover"
+    />
+
+    {/* Content */}
+    <div className="absolute bottom-0 p-10 w-full bg-gradient-to-t from-black/70 via-black/40 to-transparent">
+      
+      <img
+        src="/images/plasu-logo.png"
+        alt="PLASU Logo"
+        className="w-20 h-20 object-contain rounded-full bg-white/80 p-2 mb-6 shadow-lg"
+      />
+
+      <h2 className="text-white text-3xl font-bold leading-tight">
+        Welcome Back to
+      </h2>
+      <h2 className="text-red-400 text-3xl font-bold">
+        PLASU SafeApp
+      </h2>
+
+      <p className="text-gray-200 text-sm mt-3 max-w-sm leading-relaxed">
+        Your campus safety companion. Emergency alerts, safe routes and
+        incident reporting — all in one place.
+      </p>
+
+      <div className="flex gap-4 mt-6">
+        <div className="bg-white/20 backdrop-blur-md rounded-xl p-3 text-center border border-white/30">
+          <p className="text-white text-lg">🛡</p>
+          <p className="text-gray-200 text-xs mt-1">Emergency Alerts</p>
+        </div>
+
+        <div className="bg-white/20 backdrop-blur-md rounded-xl p-3 text-center border border-white/30">
+          <p className="text-white text-lg">🗺</p>
+          <p className="text-gray-200 text-xs mt-1">Safe Routes</p>
+        </div>
+
+        <div className="bg-white/20 backdrop-blur-md rounded-xl p-3 text-center border border-white/30">
+          <p className="text-white text-lg">📋</p>
+          <p className="text-gray-200 text-xs mt-1">Report Incidents</p>
         </div>
       </div>
+    </div>
+  </div>
+</div>
 
       {/* Right - Dark form */}
       <div className="w-full lg:w-1/2 bg-gray-900 flex items-center justify-center px-4 py-8 min-h-screen">
