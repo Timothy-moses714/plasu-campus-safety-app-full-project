@@ -28,8 +28,9 @@ const Login = () => {
     const interval = setInterval(() => {
       setCurrentImage((prev) => (prev + 1) % images.length);
     }, 4000);
+    
     return () => clearInterval(interval);
-  }, []);
+  }, [images.length]);
 
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -73,7 +74,7 @@ const Login = () => {
         transition={{ duration: 0.6 }}
         className="hidden lg:flex lg:w-1/2 relative overflow-hidden"
       >
-        {/* 🔥 Slideshow */}
+        {/*  Slideshow */}
         <div className="absolute inset-0">
           {images.map((img, index) => (
             <img

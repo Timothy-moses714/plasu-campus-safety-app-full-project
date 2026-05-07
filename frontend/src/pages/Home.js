@@ -1,111 +1,104 @@
 import { useAuth } from "../context/AuthContext";
 import PanicButton from "../components/alerts/PanicButton";
-import Navbar from "../components/layout/Navbar";
-import BottomNav from "../components/layout/BottomNav";
-import AlertBanner from "../components/alerts/AlertBanner";
+import StudentLayout from "../components/layout/StudentLayout";
 import { Link } from "react-router-dom";
 
-const quickLinks = [
-  { to: "/route-planner", icon: "🗺", label: "Safe Routes" },
-  { to: "/report", icon: "📋", label: "Report" },
-  { to: "/notifications", icon: "🔔", label: "Alerts" },
-  { to: "/profile", icon: "👤", label: "Profile" },
-];
-
 const EMERGENCY_CONTACTS = [
-  { name: "PLASU Security", number: "07012345678", icon: "🛡", color: "bg-red-50 border-red-200" },
-  { name: "University Clinic", number: "07098765432", icon: "🏥", color: "bg-blue-50 border-blue-200" },
-  { name: "Nigeria Police", number: "112", icon: "👮", color: "bg-yellow-50 border-yellow-200" },
-  { name: "Fire Service", number: "08039774488", icon: "🚒", color: "bg-orange-50 border-orange-200" },
+  { name: "PLASU Security", number: "07012345678", icon: "🛡", color: "bg-red-600", textColor: "text-white" },
+  { name: "University Clinic", number: "07098765432", icon: "🏥", color: "bg-blue-600", textColor: "text-white" },
+  { name: "Nigeria Police", number: "112", icon: "👮", color: "bg-yellow-500", textColor: "text-gray-900" },
+  { name: "Fire Service", number: "08039774488", icon: "🚒", color: "bg-orange-500", textColor: "text-white" },
 ];
 
 const Home = () => {
   const { user } = useAuth();
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
-      <AlertBanner />
-      <Navbar />
+    <StudentLayout>
+      <div className="p-4 sm:p-6 space-y-6 max-w-3xl mx-auto">
 
-      {/* Hero Banner */}
-      <div className="relative h-36 sm:h-44 overflow-hidden">
-        <img src="/images/senate-building.jpg" alt="PLASU Campus" className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-r from-red-900 via-red-800 to-transparent opacity-85 flex items-center px-4 sm:px-6">
-          <div className="flex items-center gap-3">
-            <img src="/images/plasu-logo.png" alt="PLASU Logo"
-              className="w-12 h-12 sm:w-16 sm:h-16 object-contain rounded-full bg-white bg-opacity-20 p-1 border-2 border-white border-opacity-30" />
+        {/* Welcome Banner */}
+        <div className="relative rounded-2xl overflow-hidden shadow-lg h-40 sm:h-48">
+          <img src="/images/senate-building.jpg" alt="PLASU Campus" className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-r from-red-900 via-red-800 to-transparent flex items-center px-6">
             <div>
-              <p className="text-white font-bold text-sm sm:text-base">Welcome, {user?.name?.split(" ")[0]} 👋</p>
-              <p className="text-red-200 text-xs sm:text-sm">Stay safe on campus</p>
-              <p className="text-red-300 text-xs">{user?.department} • {user?.matricNumber}</p>
+              <p className="text-red-200 text-xs sm:text-sm font-medium">Welcome back 👋</p>
+              <p className="text-white font-bold text-xl sm:text-2xl mt-1">{user?.name?.split(" ")[0]}</p>
+              <p className="text-red-200 text-xs mt-1">{user?.department}</p>
+              <p className="text-red-300 text-xs">{user?.matricNumber}</p>
             </div>
           </div>
         </div>
-      </div>
-
-      <div className="px-4 sm:px-6 pt-4 space-y-4 max-w-2xl mx-auto">
 
         {/* Panic Button */}
-        <div className="bg-white rounded-2xl shadow p-5 sm:p-6 flex flex-col items-center">
-          <p className="text-gray-500 text-xs sm:text-sm font-medium mb-4 text-center">
-            🚨 In an emergency, press the panic button — security will be notified instantly with your GPS location
+        <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 flex flex-col items-center border border-red-100">
+          <p className="text-gray-600 text-sm font-medium mb-2 text-center">Emergency Panic Button</p>
+          <p className="text-gray-400 text-xs text-center mb-6">
+            Press in case of emergency — security will be notified instantly with your GPS location
           </p>
           <PanicButton />
         </div>
 
-        {/* Quick Links */}
-        <div className="grid grid-cols-4 gap-2 sm:gap-3">
-          {quickLinks.map(({ to, icon, label }) => (
-            <Link key={to} to={to}
-              className="bg-white rounded-xl shadow p-2 sm:p-3 flex flex-col items-center gap-1 hover:bg-red-50 transition active:scale-95">
-              <span className="text-xl sm:text-2xl">{icon}</span>
-              <span className="text-[9px] sm:text-xs font-semibold text-gray-700 text-center">{label}</span>
-            </Link>
-          ))}
-        </div>
-
-        {/* Safety Reminder */}
-        <div className="relative rounded-2xl overflow-hidden shadow">
-          <img src="/images/campus-building.jpg" alt="PLASU Campus" className="w-full h-28 sm:h-36 object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-r from-red-900 via-red-800 to-transparent opacity-85 flex flex-col justify-center px-4">
-            <p className="text-white text-xs sm:text-sm font-bold mb-1">⚠ Safety Reminder</p>
-            <p className="text-red-100 text-[11px] sm:text-xs max-w-xs">
-              Always use designated safe routes at night. Report any suspicious activity immediately using the app.
-            </p>
-          </div>
-        </div>
-
         {/* Emergency Contacts */}
-        <div className="bg-white rounded-2xl shadow p-4">
-          <p className="text-gray-800 font-bold text-sm mb-3">📞 Emergency Contacts</p>
-          <div className="grid grid-cols-2 gap-2">
-            {EMERGENCY_CONTACTS.map(({ name, number, icon, color }) => (
+        <div className="bg-white rounded-2xl shadow-lg p-5 sm:p-6">
+          <h2 className="text-gray-800 font-bold text-base sm:text-lg mb-4">📞 Emergency Contacts</h2>
+          <div className="grid grid-cols-2 gap-3">
+            {EMERGENCY_CONTACTS.map(({ name, number, icon, color, textColor }) => (
               <a key={name} href={`tel:${number}`}
-                className={`border rounded-xl p-3 flex items-center gap-2 hover:opacity-80 transition active:scale-95 ${color}`}>
-                <span className="text-xl shrink-0">{icon}</span>
-                <div className="min-w-0">
-                  <p className="text-gray-700 font-semibold text-xs truncate">{name}</p>
-                  <p className="text-gray-500 text-xs">{number}</p>
-                </div>
+                className={`${color} rounded-2xl p-4 flex flex-col items-center gap-2 hover:opacity-90 transition active:scale-95 shadow`}>
+                <span className="text-3xl">{icon}</span>
+                <p className={`${textColor} font-bold text-xs sm:text-sm text-center leading-tight`}>{name}</p>
+                <p className={`${textColor} text-xs opacity-80 font-semibold`}>{number}</p>
               </a>
             ))}
           </div>
-          <p className="text-gray-400 text-xs mt-2 text-center">Tap any contact to call directly</p>
+          <p className="text-gray-400 text-xs mt-3 text-center">Tap any card to call directly</p>
         </div>
 
-        {/* Security Desk */}
-        <div className="bg-white rounded-2xl shadow overflow-hidden">
-          <img src="/images/security-desk.jpg" alt="Security Desk" className="w-full h-24 sm:h-32 object-cover object-top" />
-          <div className="p-3 sm:p-4">
-            <p className="text-gray-800 font-bold text-sm">🛡 PLASU Security Desk</p>
-            <p className="text-gray-500 text-xs mt-1">
-              Campus security is available 24/7. Use the panic button for emergencies or report incidents through the app.
+        {/* Safety Reminder - Big Image */}
+        <div className="relative rounded-2xl overflow-hidden shadow-lg h-48 sm:h-64">
+          <img src="/images/campus-building.jpg" alt="PLASU Campus" className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-red-900 via-red-900/70 to-transparent flex flex-col justify-end p-5 sm:p-6">
+            <p className="text-white font-bold text-base sm:text-lg mb-2">⚠ Campus Safety Reminder</p>
+            <p className="text-red-100 text-xs sm:text-sm leading-relaxed">
+              Always use designated safe routes at night. Avoid isolated areas especially the Mini Stadium and Checkpoint areas after 6PM. Report any suspicious activity immediately using the app.
             </p>
+            <Link to="/route-planner"
+              className="mt-3 inline-block bg-white text-red-700 font-bold text-xs px-4 py-2 rounded-xl hover:bg-red-50 transition w-fit">
+              🗺 View Safe Routes
+            </Link>
           </div>
         </div>
+
+        {/* Security Desk - Big Image */}
+        <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+          <div className="relative h-48 sm:h-56">
+            <img src="/images/security-desk.jpg" alt="Security Desk" className="w-full h-full object-cover object-top" />
+            <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/30 to-transparent" />
+            <div className="absolute bottom-0 left-0 p-4">
+              <span className="bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full">24/7 Available</span>
+            </div>
+          </div>
+          <div className="p-5">
+            <h2 className="text-gray-800 font-bold text-base sm:text-lg">🛡 PLASU Security Desk</h2>
+            <p className="text-gray-500 text-sm mt-2 leading-relaxed">
+              Campus security is available 24 hours a day, 7 days a week. Use the panic button above for immediate emergencies, or report non-urgent incidents through the Report section.
+            </p>
+            <div className="flex gap-3 mt-4">
+              <Link to="/report"
+                className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold text-sm py-2.5 rounded-xl transition text-center">
+                📋 Report Incident
+              </Link>
+              <a href="tel:07012345678"
+                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-sm py-2.5 rounded-xl transition text-center">
+                📞 Call Security
+              </a>
+            </div>
+          </div>
+        </div>
+
       </div>
-      <BottomNav />
-    </div>
+    </StudentLayout>
   );
 };
 export default Home;
