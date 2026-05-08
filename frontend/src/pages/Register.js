@@ -36,11 +36,11 @@ const Register = () => {
 
   const fields = [
     { name: "name", label: "Full Name", type: "text", placeholder: "Moses Timothy Ajiji", span: true },
-    { name: "email", label: "Email Address", type: "email", placeholder: "you@plasu.edu.ng", span: true },
-    { name: "matricNumber", label: "Matric Number", type: "text", placeholder: "PLASU/2021/FNAS/0001" },
+    { name: "email", label: "Email Address", type: "email", placeholder: "you@gmail.com", span: true },
+    { name: "matricNumber", label: "Matric Number", type: "text", placeholder: "PLASU/2020/FNAS/0001" },
     { name: "department", label: "Department / Faculty", type: "text", placeholder: "Computer Science" },
     { name: "phone", label: "Phone Number", type: "tel", placeholder: "08012345678" },
-    { name: "address", label: "Home / Hostel Address", type: "text", placeholder: "Block A Room 12, Male Hostel" },
+    { name: "address", label: "Home / Hostel Address", type: "text", placeholder: "Hostel, Across, Ndar, Chikam.(House name)" },
   ];
 
   return (
