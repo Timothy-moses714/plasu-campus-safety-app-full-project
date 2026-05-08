@@ -7,6 +7,8 @@ import { getPanicAlerts } from "../../services/panicService";
 import { useAuth } from "../../context/AuthContext";
 import { timeAgo } from "../../utils/formatDate";
 import Spinner from "../../components/common/Spinner";
+import Footer from "../components/layout/Footer";
+
 
 const StatCard = ({ icon, label, value, color }) => (
   <div className={`bg-gray-800 border border-gray-700 rounded-2xl p-5 flex items-center gap-4`}>

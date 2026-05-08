@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import StudentLayout from "../components/layout/StudentLayout";
 import Spinner from "../components/common/Spinner";
 import { useAuth } from "../context/AuthContext";
+import Footer from "../components/layout/Footer";
 
 const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
 

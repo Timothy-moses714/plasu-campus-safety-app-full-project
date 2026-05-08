@@ -4,6 +4,8 @@ import { loginUser } from "../services/authService";
 import { useAuth } from "../context/AuthContext";
 import Spinner from "../components/common/Spinner";
 import { motion } from "framer-motion";
+import Footer from "../components/layout/Footer";
+
 
 const Login = () => {
   const [email, setEmail] = useState("");

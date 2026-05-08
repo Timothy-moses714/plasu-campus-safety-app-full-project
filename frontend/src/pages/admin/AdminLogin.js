@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { loginUser } from "../../services/authService";
 import { useAuth } from "../../context/AuthContext";
 import Spinner from "../../components/common/Spinner";
+import Footer from "../components/layout/Footer";
+
 
 const AdminLogin = () => {
   const [email, setEmail] = useState("");

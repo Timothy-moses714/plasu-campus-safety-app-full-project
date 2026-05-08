@@ -6,6 +6,8 @@ import { reportIncident } from "../services/incidentService";
 import { useAuth } from "../context/AuthContext";
 import IncidentModel from "../models/Incident";
 import useLocation from "../hooks/useLocation";
+import Footer from "../components/layout/Footer";
+
 
 const INCIDENT_TYPES = ["Theft", "Assault", "Suspicious Activity", "Fire", "Other"];
 

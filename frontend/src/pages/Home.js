@@ -2,6 +2,8 @@ import { useAuth } from "../context/AuthContext";
 import PanicButton from "../components/alerts/PanicButton";
 import StudentLayout from "../components/layout/StudentLayout";
 import { Link } from "react-router-dom";
+import Footer from "../components/layout/Footer";
+
 
 const EMERGENCY_CONTACTS = [
   { name: "PLASU Security", number: "07012345678", icon: "🛡", color: "bg-red-600", textColor: "text-white" },

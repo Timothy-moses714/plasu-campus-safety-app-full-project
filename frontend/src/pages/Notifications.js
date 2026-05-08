@@ -4,6 +4,8 @@ import { getAlerts } from "../services/alertService";
 import { useAuth } from "../context/AuthContext";
 import { timeAgo } from "../utils/formatDate";
 import Spinner from "../components/common/Spinner";
+import Footer from "../components/layout/Footer";
+
 
 const severityStyles = {
   critical: "bg-red-50 border-red-300 text-red-700",

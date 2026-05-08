@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import StudentLayout from "../components/layout/StudentLayout";
 import { getRiskZones } from "../services/riskZoneService";
 import { useAuth } from "../context/AuthContext";
+import Footer from "../components/layout/Footer";
+
 
 const PLASU_CENTER = { lat: 9.3728, lng: 8.9554 };
 const PLASU_ZOOM = 20;
