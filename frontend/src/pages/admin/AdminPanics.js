@@ -4,7 +4,7 @@ import { getPanicAlerts, updatePanicStatus } from "../../services/panicService";
 import { useAuth } from "../../context/AuthContext";
 import { timeAgo } from "../../utils/formatDate";
 import Spinner from "../../components/common/Spinner";
-import Footer from "../components/layout/Footer";
+
 
 
 const playAlertSound = () => {
