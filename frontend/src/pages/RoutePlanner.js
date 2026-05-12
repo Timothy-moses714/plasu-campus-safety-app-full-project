@@ -282,6 +282,7 @@ const RoutePlanner = () => {
           ) : <div ref={mapRef} className="w-full h-full" />}
         </div>
       </div>
+      <Footer />
     </StudentLayout>
   );
 };

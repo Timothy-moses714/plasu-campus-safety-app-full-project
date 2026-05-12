@@ -100,6 +100,7 @@ const Home = () => {
         </div>
 
       </div>
+      <Footer />
     </StudentLayout>
   );
 };

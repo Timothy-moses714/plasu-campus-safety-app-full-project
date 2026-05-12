@@ -4,6 +4,7 @@ import { getIncidents, updateIncidentStatus } from "../../services/incidentServi
 import { useAuth } from "../../context/AuthContext";
 import { timeAgo } from "../../utils/formatDate";
 import Spinner from "../../components/common/Spinner";
+import Footer from "../components/layout/Footer";
 
 const STATUS_COLORS = {
   pending: "bg-yellow-900 text-yellow-300",
@@ -143,6 +144,7 @@ const AdminIncidents = () => {
           </div>
         )}
       </div>
+      <footer />
     </AdminLayout>
   );
 };

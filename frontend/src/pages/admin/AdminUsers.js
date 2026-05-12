@@ -4,6 +4,7 @@ import { getAllUsers, deleteUser } from "../../services/userService";
 import { useAuth } from "../../context/AuthContext";
 import { formatDate } from "../../utils/formatDate";
 import Spinner from "../../components/common/Spinner";
+import Footer from "../components/layout/Footer";
 
 const AdminUsers = () => {
   const [users, setUsers] = useState([]);
@@ -155,6 +156,7 @@ const AdminUsers = () => {
           </div>
         </div>
       )}
+      <footer />
     </AdminLayout>
   );
 };

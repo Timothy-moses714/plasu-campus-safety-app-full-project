@@ -71,6 +71,7 @@ const Notifications = () => {
           </div>
         )}
       </div>
+      <Footer />
     </StudentLayout>
   );
 };

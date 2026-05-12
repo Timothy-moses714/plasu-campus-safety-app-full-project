@@ -5,7 +5,7 @@ import { useAuth } from "../../context/AuthContext";
 import { timeAgo } from "../../utils/formatDate";
 import Button from "../../components/common/Button";
 import Spinner from "../../components/common/Spinner";
-
+import Footer from "../components/layout/Footer";
 
 
 const AdminSendAlert = () => {
@@ -100,6 +100,7 @@ const AdminSendAlert = () => {
           )}
         </div>
       </div>
+      <footer />
     </AdminLayout>
   );
 };

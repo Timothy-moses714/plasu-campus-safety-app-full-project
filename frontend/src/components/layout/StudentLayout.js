@@ -88,12 +88,13 @@ const StudentLayout = ({ children }) => {
             className="w-8 h-8 object-contain rounded-full bg-white p-0.5" />
           <p className="text-white font-bold text-sm">PLASU SafeApp</p>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-white text-xs opacity-70">{user?.name?.split(" ")[0]}</span>
-          <button onClick={handleLogout} className="text-gray-400 text-xs border border-gray-700 px-2 py-1 rounded-lg">
-            Logout
-          </button>
-        </div>
+        <div className="flex items-center gap-2 sm:gap-3 text-sm">
+        <span className="opacity-80 hidden sm:inline truncate max-w-[120px] text-xs">{user?.name}</span>
+        <button onClick={handleLogout}
+          className="bg-white text-red-700 px-2 sm:px-3 py-1 rounded-lg font-semibold text-xs sm:text-sm hover:bg-red-50 transition">
+          Logout
+        </button>
+      </div>
       </div>
 
       {/* Mobile bottom nav */}

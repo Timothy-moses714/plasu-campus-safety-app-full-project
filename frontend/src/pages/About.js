@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import StudentLayout from "../components/layout/StudentLayout";
+import Footer from "../components/layout/Footer";
 
 const features = [
   { icon: "🚨", title: "Emergency Panic Button", desc: "One-tap emergency alert that instantly notifies campus security with the student's real-time GPS location." },
@@ -118,6 +119,7 @@ const About = () => (
       </motion.div>
 
     </div>
+    <footer />
   </StudentLayout>
 );
 export default About;

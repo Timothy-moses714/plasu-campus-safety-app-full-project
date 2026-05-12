@@ -4,6 +4,7 @@ import { getAlerts, createAlert, deactivateAlert } from "../../services/alertSer
 import { useAuth } from "../../context/AuthContext";
 import { timeAgo } from "../../utils/formatDate";
 import Spinner from "../../components/common/Spinner";
+import Footer from "../components/layout/Footer";
 
 const SEVERITY_COLORS = {
   critical: "bg-red-900 border-red-600 text-red-300",
@@ -106,6 +107,7 @@ const AdminAlerts = () => {
           )}
         </div>
       </div>
+      <footer />
     </AdminLayout>
   );
 };

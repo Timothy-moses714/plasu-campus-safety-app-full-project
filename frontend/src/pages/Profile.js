@@ -187,6 +187,7 @@ const Profile = () => {
 
         <Link to="/" className="block text-center text-xs text-gray-400 hover:text-red-600 pb-4">← Back to Home</Link>
       </div>
+      <Footer />
     </StudentLayout>
   );
 };

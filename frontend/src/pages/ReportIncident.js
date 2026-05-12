@@ -54,12 +54,7 @@ const ReportIncident = () => {
           </div>
         ) : (
           <div className="bg-white rounded-2xl shadow p-5 space-y-4">
-            <div>
-              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Incident Title</label>
-              <input name="title" value={form.title} onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
-                placeholder="Brief title of the incident" />
-            </div>
+            
             <div>
               <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Type</label>
               <select name="type" value={form.type} onChange={handleChange}
@@ -84,6 +79,7 @@ const ReportIncident = () => {
           </div>
         )}
       </div>
+      <Footer />
     </StudentLayout>
   );
 };

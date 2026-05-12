@@ -19,10 +19,10 @@ const Login = () => {
     "/images/campus-gate.jpg",
     "/images/campus-gate-2.jpg",
     "/images/campus-main.jpg",
-    "/images/plasu-gate.jpg",
+    "/images/plasu-gate-2.jpg",
     "/images/security-officers.jpg",
     "/images/security-desk.jpg",
-    "/images/plasu-logo.jpg",
+    "/images/uni-block.jpg",
   ];
   const [currentImage, setCurrentImage] = useState(0);
 
@@ -249,7 +249,9 @@ const Login = () => {
           </div>
         </div>
       </motion.div>
+      <Footer />
     </div>
+    
   );
 };
 
