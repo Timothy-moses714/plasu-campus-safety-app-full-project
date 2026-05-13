@@ -3,7 +3,7 @@ import AdminLayout from "../../components/admin/AdminLayout";
 import { getRiskZones, autoClassifyAll, deleteRiskZone } from "../../services/riskZoneService";
 import { useAuth } from "../../context/AuthContext";
 import Spinner from "../../components/common/Spinner";
-import Footer from "../components/layout/Footer";
+import Footer from "../../components/layout/Footer";
 
 const LEVEL_COLORS = {
   high:   "bg-red-900 border-red-600 text-red-300",
@@ -133,7 +133,7 @@ const AdminRiskZones = () => {
           </div>
         )}
       </div>
-      <footer />
+      <Footer />
     </AdminLayout>
   );
 };

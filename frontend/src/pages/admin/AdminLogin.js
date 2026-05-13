@@ -141,7 +141,7 @@ const AdminLogin = () => {
           </div>
         </motion.div>
       </div>
-      <footer />
+      <Footer />
     </div>
   );
 };

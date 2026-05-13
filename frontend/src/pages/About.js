@@ -119,7 +119,7 @@ const About = () => (
       </motion.div>
 
     </div>
-    <footer />
+    <Footer />
   </StudentLayout>
 );
 export default About;
