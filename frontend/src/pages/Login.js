@@ -4,10 +4,7 @@ import { loginUser } from "../services/authService";
 import { useAuth } from "../context/AuthContext";
 import Spinner from "../components/common/Spinner";
 import { motion } from "framer-motion";
-import loadingScreen from "../components/LoadingScreen" 
 import Footer from "../components/layout/Footer";
-import LoadingScreen from "../components/LoadingScreen";
-
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -284,8 +281,6 @@ const Login = () => {
         </div>
       </motion.div>
     </div>
-
-    <LoadingScreen />
 
     {/* FOOTER */}
     <Footer />
