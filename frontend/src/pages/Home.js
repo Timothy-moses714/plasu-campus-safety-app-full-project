@@ -102,6 +102,6 @@ const Home = () => {
       </div>
       <Footer />
     </StudentLayout>
-  );
+   );
 };
 export default Home;

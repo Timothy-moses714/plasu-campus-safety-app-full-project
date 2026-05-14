@@ -44,7 +44,7 @@ const Register = () => {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col overflow-hidden">
+    <div className=" flex flex-col ">
       <div className="flex flex-1">
         {/* Left panel */}
         <motion.div
@@ -54,7 +54,7 @@ const Register = () => {
           <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800/80 to-red-900/60" />
           <div className="absolute inset-0 flex flex-col justify-center p-10">
             <motion.div initial={{ opacity: 0, y: 120 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, delay: 0.2 }}>
-              <img src="/images/plasu-logo.png" alt="PLASU Logo"
+              <img src="/images/security-desk.png" alt="PLASU Logo"
                 className="w-16 h-16 object-contain rounded-full bg-white/20 p-1.5 mb-6 border-2 border-white/30" />
               <h2 className="text-white text-2xl font-bold">PLASU SafeApp</h2>
               <p className="text-gray-300 text-sm mt-1">Plateau State University, Bokkos</p>
@@ -111,10 +111,6 @@ const Register = () => {
                     placeholder={placeholder} />
                 </div>
               ))}
-
-              <div className="sm:col-span-2">
-                <p className="text-xs text-gray-600 mb-2">📝 Matric format: PLASU/YEAR/FACULTY/NUMBER e.g. PLASU/2021/FNAS/0001</p>
-              </div>
 
               <div className="sm:col-span-2">
                 <label className="block text-xs font-medium text-gray-400 mb-1">Password</label>

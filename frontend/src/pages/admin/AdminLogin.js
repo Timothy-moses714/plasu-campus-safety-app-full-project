@@ -39,7 +39,7 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className=" flex flex-col">
       <div className="flex flex-1">
         {/* Left - Security image */}
         <motion.div

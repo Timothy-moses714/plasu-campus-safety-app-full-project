@@ -67,7 +67,7 @@ const Login = () => {
   };
 
   return (
-  <div className="min-h-screen flex flex-col">
+  <div className=" flex flex-col">
 
     {/* MAIN CONTENT */}
     <div className="flex flex-1">
