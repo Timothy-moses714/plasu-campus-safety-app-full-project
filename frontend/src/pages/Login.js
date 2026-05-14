@@ -67,7 +67,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex flex-col">
 
       {/* LEFT SIDE */}
       <motion.div
@@ -91,7 +91,7 @@ const Login = () => {
         </div>
 
         {/* Content */}
-        <div className="absolute bottom-0 p-10 w-full bg-gradient-to-t from-black/70 via-black/40 to-transparent">
+        <div className="flex flex-1 absolute bottom-0 p-10 w-full bg-gradient-to-t from-black/70 via-black/40 to-transparent">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -249,6 +249,7 @@ const Login = () => {
           </div>
         </div>
       </motion.div>
+      
       <Footer />
     </div>
     
