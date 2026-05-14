@@ -20,7 +20,7 @@ const StudentLayout = ({ children }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
       <AlertBanner />
 
       {/* Sidebar - desktop */}
@@ -74,7 +74,8 @@ const StudentLayout = ({ children }) => {
         {/* Logout */}
         <div className="p-4 border-t border-gray-800 shrink-0">
           <button onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-400 hover:bg-gray-800 hover:text-white transition">
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium 
+            text-gray-400 hover:bg-gray-800 hover:text-white transition">
             <span className="text-lg">🚪</span>
             <span>Logout</span>
           </button>
@@ -82,7 +83,8 @@ const StudentLayout = ({ children }) => {
       </aside>
 
       {/* Mobile top bar */}
-      <div className="md:hidden fixed top-0 left-0 w-full bg-gray-900 border-b border-gray-800 z-40 px-4 py-2 flex items-center justify-between">
+      <div className="md:hidden fixed top-0 left-0 w-full bg-gray-900 border-b
+       border-gray-800 z-40 px-4 py-2 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <img src="/images/plasu-logo.png" alt="PLASU"
             className="w-8 h-8 object-contain rounded-full bg-white p-0.5" />
@@ -91,14 +93,16 @@ const StudentLayout = ({ children }) => {
         <div className="flex items-center gap-2 sm:gap-3 text-sm">
         <span className="opacity-80 hidden sm:inline truncate max-w-[120px] text-xs">{user?.name}</span>
         <button onClick={handleLogout}
-          className="bg-white text-red-700 px-2 sm:px-3 py-1 rounded-lg font-semibold text-xs sm:text-sm hover:bg-red-50 transition">
+          className="bg-white text-red-700 px-2 sm:px-3 py-1 rounded-lg font-semibold text-xs 
+          sm:text-sm hover:bg-red-50 transition">
           Logout
         </button>
       </div>
       </div>
 
       {/* Mobile bottom nav */}
-      <nav className="md:hidden fixed bottom-0 left-0 w-full bg-gray-900 border-t border-gray-800 z-40 flex justify-around py-2">
+      <nav className="md:hidden fixed bottom-0 left-0 w-full bg-gray-900 
+      border-t border-gray-800 z-40 flex justify-around py-2">
         {navItems.map(({ to, icon, label }) => (
           <NavLink key={to} to={to} end={to === "/"}
             className={({ isActive }) =>
@@ -113,7 +117,7 @@ const StudentLayout = ({ children }) => {
       </nav>
 
       {/* Main content */}
-      <main className="flex-1 md:ml-64 pt-14 md:pt-0 pb-20 md:pb-0 min-h-screen">
+      <main className="flex-1 md:ml-64 pt-14 md:pt-0 pb-20 md:pb-0 ">
         {children}
       </main>
     </div>

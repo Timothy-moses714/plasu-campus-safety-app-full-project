@@ -1,15 +1,28 @@
-const Footer = () => (
-  <footer className="bg-gray-900 border-t border-gray-800 py-6 px-6">
-    <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
-      <div className="flex items-center gap-2">
-        <img src="/images/plasu-logo.png" alt="PLASU" className="w-6 h-6 object-contain rounded-full bg-white p-0.5" />
-        <p className="text-gray-400 text-xs font-semibold">PLASU SafeApp</p>
-      </div>
-      <p className="text-gray-600 text-xs text-center">
-        © {new Date().getFullYear()} Plateau State University, Bokkos · Campus Safety System
-      </p>
-      <p className="text-gray-600 text-xs italic">"Knowledge, Diligence, Integrity"</p>
-    </div>
-  </footer>
+import { NavLink } from "react-router-dom";
+
+const navItems = [
+  { to: "/", label: "Home", icon: "🏠" },
+  { to: "/route-planner", label: "Routes", icon: "🗺" },
+  { to: "/report", label: "Report", icon: "📋" },
+  { to: "/notifications", label: "Alerts", icon: "🔔" },
+  { to: "/profile", label: "Profile", icon: "👤" },
+];
+
+const BottomNav = () => (
+  <nav className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 flex justify-around py-2 z-40 shadow-lg md:hidden">
+    {navItems.map(({ to, label, icon }) => (
+      <NavLink key={to} to={to}
+        className={({ isActive }) =>
+          `flex flex-col items-center gap-0.5 px-2 py-1 rounded-lg transition min-w-[50px] ${
+            isActive ? "text-red-600 font-bold" : "text-gray-500"
+          }`
+        }
+      >
+        <span className="text-xl">{icon}</span>
+        <span className="text-[10px]">{label}</span>
+      </NavLink>
+    ))}
+  </nav>
 );
-export default Footer;
+
+export default BottomNav;
