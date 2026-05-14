@@ -44,16 +44,16 @@ const Register = () => {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col overflow-hidden">
       <div className="flex flex-1">
         {/* Left panel */}
         <motion.div
-          initial={{ opacity: 0, x: -40 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }}
+          initial={{ opacity: 0, x: -120 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.9 }}
           className="hidden lg:flex lg:w-2/5 relative overflow-hidden">
           <img src="/images/senate-building.jpg" alt="PLASU Senate" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800/80 to-red-900/60" />
           <div className="absolute inset-0 flex flex-col justify-center p-10">
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+            <motion.div initial={{ opacity: 0, y: 120 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, delay: 0.2 }}>
               <img src="/images/plasu-logo.png" alt="PLASU Logo"
                 className="w-16 h-16 object-contain rounded-full bg-white/20 p-1.5 mb-6 border-2 border-white/30" />
               <h2 className="text-white text-2xl font-bold">PLASU SafeApp</h2>
@@ -62,7 +62,7 @@ const Register = () => {
                 {["Real-time emergency panic button", "GPS-based safe route navigation",
                   "Campus incident reporting", "Instant security notifications",
                   "ML-powered risk zone detection"].map((f, i) => (
-                  <motion.div key={i} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
+                  <motion.div key={i} initial={{ opacity: 0, x: -120 }} animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.4 + i * 0.1 }} className="flex items-center gap-3">
                     <div className="w-5 h-5 rounded-full bg-red-500/30 flex items-center justify-center shrink-0">
                       <div className="w-2 h-2 rounded-full bg-red-400" />
