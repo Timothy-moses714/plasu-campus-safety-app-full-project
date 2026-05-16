@@ -2,29 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
 html, body, #root {
   height: 100%;
-  width: 100%;
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
-body {
-  font-family: "Segoe UI", system-ui, sans-serif;
-  background-color: #f9fafb;
-  -webkit-font-smoothing: antialiased;
-}
-
-.loading-screen {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  font-size: 1rem;
-  color: #6b7280;
-}
+/* Thin scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #4B5563; border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: #6B7280; }
