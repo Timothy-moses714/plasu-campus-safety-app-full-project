@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import StudentLayout from "../components/layout/StudentLayout";
-import { getIncidents } from "../services/incidentService";
 import { useAuth } from "../context/AuthContext";
 import { timeAgo } from "../utils/formatDate";
 import Spinner from "../components/common/Spinner";
-import { motion } from "framer-motion";
+
+const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
 
 const STATUS_STYLES = {
   pending:      "bg-yellow-100 text-yellow-700 border-yellow-200",
@@ -18,18 +18,26 @@ const STATUS_ICONS = { pending: "⏳", acknowledged: "👀", resolved: "✅" };
 const MyIncidents = () => {
   const [incidents, setIncidents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const { user } = useAuth();
 
   useEffect(() => {
-    const fetch = async () => {
+    const fetchMyIncidents = async () => {
       try {
-        const res = await getIncidents(user.token);
-        const data = res.data || res;
-        setIncidents(Array.isArray(data) ? data : []);
-      } catch { setIncidents([]); }
-      finally { setLoading(false); }
+        const res = await fetch(`${BASE_URL}/incidents`, {
+          headers: { Authorization: `Bearer ${user.token}` },
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || "Failed to load");
+        const list = data.data || data;
+        setIncidents(Array.isArray(list) ? list : []);
+      } catch (err) {
+        setError(err.message || "Failed to load incidents");
+      } finally {
+        setLoading(false);
+      }
     };
-    fetch();
+    if (user?.token) fetchMyIncidents();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -38,7 +46,7 @@ const MyIncidents = () => {
       <div className="p-4 sm:p-6 max-w-2xl mx-auto space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-lg sm:text-xl font-bold text-gray-800">📋 My Reports</h2>
+            <h2 className="text-lg sm:text-xl font-bold text-gray-800">📄 My Reports</h2>
             <p className="text-gray-500 text-xs mt-1">Track your submitted incident reports</p>
           </div>
           <Link to="/report"
@@ -48,7 +56,12 @@ const MyIncidents = () => {
         </div>
 
         {loading ? (
-          <div className="flex justify-center py-12"><Spinner /></div>
+          <div className="flex justify-center py-16"><Spinner /></div>
+        ) : error ? (
+          <div className="bg-red-50 border border-red-200 rounded-2xl p-6 text-center">
+            <p className="text-red-600 text-sm font-semibold">{error}</p>
+            <p className="text-gray-400 text-xs mt-1">Check your connection and try again</p>
+          </div>
         ) : incidents.length === 0 ? (
           <div className="text-center py-16 bg-white rounded-2xl shadow">
             <p className="text-5xl mb-3">📋</p>
@@ -61,11 +74,8 @@ const MyIncidents = () => {
           </div>
         ) : (
           <div className="space-y-3">
-            {incidents.map((inc, i) => (
-              <motion.div key={inc._id}
-                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.05 }}
-                className="bg-white rounded-2xl shadow p-4 hover:shadow-md transition">
+            {incidents.map((inc) => (
+              <div key={inc._id} className="bg-white rounded-2xl shadow p-4">
                 <div className="flex items-start justify-between gap-3 mb-2">
                   <p className="text-gray-800 font-bold text-sm">{inc.title}</p>
                   <span className={`text-xs px-2 py-1 rounded-full border font-semibold shrink-0 ${STATUS_STYLES[inc.status] || STATUS_STYLES.pending}`}>
@@ -79,7 +89,9 @@ const MyIncidents = () => {
                   <p className="text-gray-400 text-xs line-clamp-2 mb-2">{inc.description}</p>
                 )}
                 <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-                  <p className="text-gray-400 text-xs">📍 {inc.location?.lat ? `${inc.location.lat.toFixed(3)}, ${inc.location.lng.toFixed(3)}` : "Location N/A"}</p>
+                  <p className="text-gray-400 text-xs">
+                    📍 {inc.location?.lat ? `${inc.location.lat.toFixed(3)}, ${inc.location.lng.toFixed(3)}` : "Location N/A"}
+                  </p>
                   <p className="text-gray-400 text-xs">⏱ {timeAgo(inc.createdAt)}</p>
                 </div>
                 {inc.status === "resolved" && (
@@ -92,7 +104,7 @@ const MyIncidents = () => {
                     <p className="text-blue-700 text-xs font-semibold">👀 Security is reviewing this report</p>
                   </div>
                 )}
-              </motion.div>
+              </div>
             ))}
           </div>
         )}

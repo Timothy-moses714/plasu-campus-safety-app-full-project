@@ -4,8 +4,6 @@ import { getAlerts } from "../services/alertService";
 import { useAuth } from "../context/AuthContext";
 import { timeAgo } from "../utils/formatDate";
 import Spinner from "../components/common/Spinner";
-import Footer from "../components/layout/Footer";
-
 
 const severityStyles = {
   critical: "bg-red-50 border-red-300 text-red-700",
@@ -28,31 +26,25 @@ const Notifications = () => {
       } catch { setAlerts([]); }
       finally { setLoading(false); }
     };
-    fetchAlerts();
+    if (user?.token) fetchAlerts();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <StudentLayout>
       <div className="p-4 sm:p-6 max-w-2xl mx-auto space-y-4">
-        {/* Header image */}
-        <div className="relative h-36 sm:h-44 rounded-2xl overflow-hidden shadow-lg">
-          <img src="/images/justice-statue.jpg" alt="Campus" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-r from-red-900 via-red-800 to-transparent flex items-center px-5">
-            <div>
-              <h1 className="text-white font-bold text-lg sm:text-xl">🔔 Alerts & Notifications</h1>
-              <p className="text-red-200 text-xs sm:text-sm mt-1">Stay informed about campus safety</p>
-            </div>
-          </div>
+        <div>
+          <h2 className="text-lg sm:text-xl font-bold text-gray-800">🔔 Alerts & Notifications</h2>
+          <p className="text-gray-500 text-xs mt-1">Stay informed about campus safety</p>
         </div>
 
         {loading ? (
-          <div className="py-10 flex justify-center"><Spinner /></div>
+          <div className="py-16 flex justify-center"><Spinner /></div>
         ) : alerts.length === 0 ? (
-          <div className="text-center py-16 text-gray-400 bg-white rounded-2xl shadow">
+          <div className="text-center py-16 bg-white rounded-2xl shadow">
             <p className="text-5xl mb-3">✅</p>
-            <p className="font-semibold">No alerts at the moment</p>
-            <p className="text-sm mt-1">Stay safe on campus!</p>
+            <p className="text-gray-600 font-semibold">No alerts at the moment</p>
+            <p className="text-gray-400 text-sm mt-1">Stay safe on campus!</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -71,7 +63,6 @@ const Notifications = () => {
           </div>
         )}
       </div>
-      <Footer />
     </StudentLayout>
   );
 };
