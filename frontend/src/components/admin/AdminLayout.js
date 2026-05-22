@@ -16,10 +16,10 @@ const AdminLayout = ({ children }) => {
   const handleLogout = () => { logout(); navigate("/admin/login"); };
 
   return (
-    <div className="min-h-screen bg-gray-900 flex">
+    <div className="min-h-screen bg-gray-900">
 
       {/* Sidebar desktop */}
-      <aside className="w-64 bg-gray-800 border-r border-gray-700 flex-col fixed top-0 left-0 h-full hidden md:flex z-30 overflow-y-auto">
+      <aside className="w-64 bg-gray-800 border-r border-gray-700 fixed top-0 left-0 h-full hidden md:flex flex-col z-30">
         <div className="relative h-32 overflow-hidden shrink-0">
           <img src="/images/campus-gate-2.jpg" alt="PLASU" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gray-900 bg-opacity-70 flex items-center p-4 gap-3">
@@ -32,7 +32,7 @@ const AdminLayout = ({ children }) => {
           </div>
         </div>
 
-        <nav className="flex-1 p-4 space-y-1">
+        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
           {navItems.map(({ to, icon, label }) => (
             <NavLink key={to} to={to}
               className={({ isActive }) =>
@@ -87,10 +87,15 @@ const AdminLayout = ({ children }) => {
         ))}
       </nav>
 
-      {/* Main content — scrolls normally */}
-      <main className="flex-1 md:ml-64 pt-14 md:pt-0 pb-20 md:pb-0 min-h-screen">
-        <div className="p-4 sm:p-6 md:p-8">{children}</div>
-      </main>
+      {/* Main content
+          - Desktop: pushed right by sidebar (ml-64)
+          - Mobile: top padding for top bar (pt-14), bottom padding for bottom nav (pb-20)
+      */}
+      <div className="md:ml-64 pt-14 md:pt-0 pb-20 md:pb-0">
+        <div className="p-4 sm:p-6 md:p-8">
+          {children}
+        </div>
+      </div>
     </div>
   );
 };

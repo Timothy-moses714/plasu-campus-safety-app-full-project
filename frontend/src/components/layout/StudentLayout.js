@@ -36,11 +36,11 @@ const StudentLayout = ({ children }) => {
   const handleLogout = () => { logout(); navigate("/login"); };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-gray-50">
       <AlertBanner />
 
       {/* Sidebar desktop */}
-      <aside className="w-64 bg-gray-900 flex-col fixed top-0 left-0 h-full hidden md:flex z-30 overflow-y-auto">
+      <aside className="w-64 bg-gray-900 fixed top-0 left-0 h-full hidden md:flex flex-col z-30">
         <div className="relative h-36 overflow-hidden shrink-0">
           <img src="/images/campus-gate.jpg" alt="PLASU" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-900 opacity-90" />
@@ -70,7 +70,7 @@ const StudentLayout = ({ children }) => {
           </div>
         </div>
 
-        <nav className="flex-1 p-4 space-y-1">
+        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
           {navItems.map(({ to, icon, label, hasBadge }) => (
             <NavLink key={to} to={to} end={to === "/"}
               className={({ isActive }) =>
@@ -134,10 +134,14 @@ const StudentLayout = ({ children }) => {
         ))}
       </nav>
 
-      {/* Main content — scrolls normally */}
-      <main className="flex-1 md:ml-64 pt-14 md:pt-0 pb-20 md:pb-0 min-h-screen">
+      {/* Main content area
+          - On desktop: pushed right by sidebar (ml-64), normal top padding
+          - On mobile: top padding for top bar (pt-14), bottom padding for bottom nav (pb-20)
+          - Content is naturally as tall as it needs to be — no overflow issues
+      */}
+      <div className="md:ml-64 pt-14 md:pt-0 pb-20 md:pb-0">
         {children}
-      </main>
+      </div>
     </div>
   );
 };
