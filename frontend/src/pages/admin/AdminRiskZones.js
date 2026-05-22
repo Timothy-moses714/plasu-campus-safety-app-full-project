@@ -1,28 +1,32 @@
 import { useState, useEffect, useCallback } from "react";
 import AdminLayout from "../../components/admin/AdminLayout";
-import { getRiskZones, autoClassifyAll, deleteRiskZone } from "../../services/riskZoneService";
 import { useAuth } from "../../context/AuthContext";
 import Spinner from "../../components/common/Spinner";
-import Footer from "../../components/layout/Footer";
+
+const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
 
 const LEVEL_COLORS = {
-  high:   "bg-red-900 border-red-600 text-red-300",
-  medium: "bg-yellow-900 border-yellow-600 text-yellow-300",
-  low:    "bg-green-900 border-green-600 text-green-300",
+  high:   "bg-red-900 border-red-600",
+  medium: "bg-yellow-900 border-yellow-600",
+  low:    "bg-green-900 border-green-600",
 };
-
+const LEVEL_TEXT = { high: "text-red-300", medium: "text-yellow-300", low: "text-green-300" };
 const LEVEL_ICONS = { high: "🔴", medium: "🟡", low: "🟢" };
 
 const AdminRiskZones = () => {
   const [zones, setZones] = useState([]);
   const [loading, setLoading] = useState(true);
   const [classifying, setClassifying] = useState(false);
+  const [error, setError] = useState("");
   const { user } = useAuth();
 
   const fetchZones = useCallback(async () => {
     try {
-      const res = await getRiskZones(user.token);
-      setZones(res.data || []);
+      const res = await fetch(`${BASE_URL}/riskzones`, {
+        headers: { Authorization: `Bearer ${user.token}` },
+      });
+      const data = await res.json();
+      setZones(data.data || []);
     } catch (err) {
       console.error(err);
     } finally {
@@ -34,11 +38,16 @@ const AdminRiskZones = () => {
 
   const handleAutoClassify = async () => {
     setClassifying(true);
+    setError("");
     try {
-      await autoClassifyAll(user.token);
+      const res = await fetch(`${BASE_URL}/riskzones/auto-classify`, {
+        headers: { Authorization: `Bearer ${user.token}` },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Classification failed");
       await fetchZones();
     } catch (err) {
-      alert("Classification failed: " + err.message);
+      setError(err.message || "Classification failed. Check backend connection.");
     } finally {
       setClassifying(false);
     }
@@ -47,9 +56,12 @@ const AdminRiskZones = () => {
   const handleDelete = async (id) => {
     if (!window.confirm("Remove this risk zone?")) return;
     try {
-      await deleteRiskZone(id, user.token);
+      await fetch(`${BASE_URL}/riskzones/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${user.token}` },
+      });
       setZones(prev => prev.filter(z => z._id !== id));
-    } catch (err) {
+    } catch {
       alert("Failed to remove zone");
     }
   };
@@ -69,18 +81,24 @@ const AdminRiskZones = () => {
             <p className="text-gray-400 text-sm mt-1">AI-powered campus safety risk analysis</p>
           </div>
           <button onClick={handleAutoClassify} disabled={classifying}
-            className="bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2 rounded-lg transition disabled:opacity-50 flex items-center gap-2 text-sm">
+            className="bg-red-600 hover:bg-red-700 text-white font-bold px-5 py-2.5 rounded-xl transition disabled:opacity-50 flex items-center gap-2 text-sm">
             {classifying ? <><Spinner size="sm" color="white" /> Classifying...</> : "🤖 Run ML Classification"}
           </button>
         </div>
 
-        {/* ML Info Card */}
+        {error && (
+          <div className="bg-red-900 border border-red-700 text-red-200 text-sm p-3 rounded-xl">
+            {error}
+          </div>
+        )}
+
+        {/* Info card */}
         <div className="bg-gray-800 border border-gray-700 rounded-2xl p-4">
           <p className="text-white font-semibold text-sm mb-2">How the ML Model Works</p>
           <p className="text-gray-400 text-xs leading-relaxed">
-            The Random Forest-inspired classifier analyses each campus location based on:
-            incident history, lighting conditions, isolation level, and time of day patterns.
-            Locations are scored and classified as High (🔴), Medium (🟡), or Low (🟢) risk.
+            The Random Forest-inspired classifier analyses each campus location based on incident history,
+            lighting conditions, isolation level, and time of day. Locations are scored and classified
+            as High (🔴 score ≥60), Medium (🟡 score ≥30), or Low (🟢 score below 30) risk.
           </p>
           <div className="flex gap-4 mt-3 text-xs">
             <span className="text-red-400">🔴 High: {stats.high} zones</span>
@@ -93,19 +111,19 @@ const AdminRiskZones = () => {
           <div className="flex justify-center py-12"><Spinner size="lg" color="red" /></div>
         ) : zones.length === 0 ? (
           <div className="text-center py-12 text-gray-500">
-            <p className="text-4xl mb-3">🤖</p>
-            <p className="font-semibold">No risk zones classified yet</p>
+            <p className="text-5xl mb-3">🤖</p>
+            <p className="font-semibold text-white">No risk zones classified yet</p>
             <p className="text-sm mt-1">Click "Run ML Classification" to analyse all campus locations</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {zones.map((zone) => (
-              <div key={zone._id} className={`border rounded-2xl p-4 ${LEVEL_COLORS[zone.level]}`}>
+              <div key={zone._id} className={`border rounded-2xl p-4 ${LEVEL_COLORS[zone.level] || "bg-gray-800 border-gray-700"}`}>
                 <div className="flex items-start justify-between gap-2 mb-3">
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="text-lg">{LEVEL_ICONS[zone.level]}</span>
-                      <p className="font-bold text-sm">{zone.name}</p>
+                      <span>{LEVEL_ICONS[zone.level]}</span>
+                      <p className={`font-bold text-sm ${LEVEL_TEXT[zone.level]}`}>{zone.name}</p>
                     </div>
                     <span className={`text-xs px-2 py-0.5 rounded-full font-bold mt-1 inline-block capitalize ${
                       zone.level === "high" ? "bg-red-700 text-white" :
@@ -114,9 +132,9 @@ const AdminRiskZones = () => {
                     }`}>{zone.level} risk</span>
                   </div>
                   <button onClick={() => handleDelete(zone._id)}
-                    className="text-xs opacity-60 hover:opacity-100 transition">✕</button>
+                    className="text-gray-500 hover:text-red-400 text-sm transition shrink-0">✕</button>
                 </div>
-                <div className="space-y-1 text-xs opacity-80">
+                <div className={`space-y-1 text-xs ${LEVEL_TEXT[zone.level]} opacity-80`}>
                   <p>📍 {zone.location?.lat?.toFixed(4)}, {zone.location?.lng?.toFixed(4)}</p>
                   <p>💡 Lighting: {zone.features?.lighting}</p>
                   <p>🏚 Isolated: {zone.features?.isolated ? "Yes" : "No"}</p>
@@ -133,7 +151,6 @@ const AdminRiskZones = () => {
           </div>
         )}
       </div>
-      <Footer />
     </AdminLayout>
   );
 };

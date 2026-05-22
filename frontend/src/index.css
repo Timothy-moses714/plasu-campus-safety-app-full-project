@@ -2,13 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
-html, body, #root {
+/* Let browser handle default scrolling */
+html, body {
   height: 100%;
-  overflow: hidden;
+  margin: 0;
+  padding: 0;
 }
 
-/* Thin scrollbar */
+#root {
+  height: 100%;
+}
+
+/* Thin scrollbar styling */
 ::-webkit-scrollbar { width: 10px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #7a8697; border-radius: 4px; }
+::-webkit-scrollbar-thumb { background: #4B5563; border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: #6B7280; }

@@ -12,7 +12,6 @@ const STATUS_STYLES = {
   acknowledged: "bg-blue-100 text-blue-700 border-blue-200",
   resolved:     "bg-green-100 text-green-700 border-green-200",
 };
-
 const STATUS_ICONS = { pending: "⏳", acknowledged: "👀", resolved: "✅" };
 
 const MyIncidents = () => {
@@ -22,22 +21,23 @@ const MyIncidents = () => {
   const { user } = useAuth();
 
   useEffect(() => {
+    if (!user?.token) return;
     const fetchMyIncidents = async () => {
       try {
         const res = await fetch(`${BASE_URL}/incidents`, {
           headers: { Authorization: `Bearer ${user.token}` },
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.message || "Failed to load");
+        if (!res.ok) throw new Error(data.message || "Failed to load incidents");
         const list = data.data || data;
         setIncidents(Array.isArray(list) ? list : []);
       } catch (err) {
-        setError(err.message || "Failed to load incidents");
+        setError(err.message || "Failed to load. Check your connection.");
       } finally {
         setLoading(false);
       }
     };
-    if (user?.token) fetchMyIncidents();
+    fetchMyIncidents();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -59,8 +59,9 @@ const MyIncidents = () => {
           <div className="flex justify-center py-16"><Spinner /></div>
         ) : error ? (
           <div className="bg-red-50 border border-red-200 rounded-2xl p-6 text-center">
+            <p className="text-4xl mb-2">⚠️</p>
             <p className="text-red-600 text-sm font-semibold">{error}</p>
-            <p className="text-gray-400 text-xs mt-1">Check your connection and try again</p>
+            <p className="text-gray-400 text-xs mt-1">Make sure your backend is running</p>
           </div>
         ) : incidents.length === 0 ? (
           <div className="text-center py-16 bg-white rounded-2xl shadow">
@@ -82,7 +83,7 @@ const MyIncidents = () => {
                     {STATUS_ICONS[inc.status]} {inc.status}
                   </span>
                 </div>
-                <p className="text-gray-500 text-xs capitalize mb-2">
+                <p className="text-gray-500 text-xs capitalize mb-1">
                   🏷 {inc.type?.replace(/_/g, " ")}
                 </p>
                 {inc.description && (
@@ -96,12 +97,12 @@ const MyIncidents = () => {
                 </div>
                 {inc.status === "resolved" && (
                   <div className="mt-2 bg-green-50 border border-green-200 rounded-xl p-2">
-                    <p className="text-green-700 text-xs font-semibold">✅ This incident has been resolved by security</p>
+                    <p className="text-green-700 text-xs font-semibold">✅ Resolved by security</p>
                   </div>
                 )}
                 {inc.status === "acknowledged" && (
                   <div className="mt-2 bg-blue-50 border border-blue-200 rounded-xl p-2">
-                    <p className="text-blue-700 text-xs font-semibold">👀 Security is reviewing this report</p>
+                    <p className="text-blue-700 text-xs font-semibold">👀 Security is reviewing this</p>
                   </div>
                 )}
               </div>

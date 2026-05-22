@@ -36,12 +36,11 @@ const StudentLayout = ({ children }) => {
   const handleLogout = () => { logout(); navigate("/login"); };
 
   return (
-    <div className="h-screen flex overflow-hidden bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex">
       <AlertBanner />
 
-      {/* ── Sidebar desktop ── */}
-      <aside className="w-64 bg-gray-900 flex-col fixed h-full hidden md:flex z-30">
-        {/* Campus image header */}
+      {/* Sidebar desktop */}
+      <aside className="w-64 bg-gray-900 flex-col fixed top-0 left-0 h-full hidden md:flex z-30 overflow-y-auto">
         <div className="relative h-36 overflow-hidden shrink-0">
           <img src="/images/campus-gate.jpg" alt="PLASU" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-900 opacity-90" />
@@ -55,7 +54,6 @@ const StudentLayout = ({ children }) => {
           </div>
         </div>
 
-        {/* Student info */}
         <div className="px-4 py-3 border-b border-gray-800 shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full overflow-hidden bg-red-600 shrink-0 flex items-center justify-center border-2 border-red-500">
@@ -72,8 +70,7 @@ const StudentLayout = ({ children }) => {
           </div>
         </div>
 
-        {/* Nav links */}
-        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+        <nav className="flex-1 p-4 space-y-1">
           {navItems.map(({ to, icon, label, hasBadge }) => (
             <NavLink key={to} to={to} end={to === "/"}
               className={({ isActive }) =>
@@ -92,7 +89,6 @@ const StudentLayout = ({ children }) => {
           ))}
         </nav>
 
-        {/* Logout */}
         <div className="p-4 border-t border-gray-800 shrink-0">
           <button onClick={handleLogout}
             className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-400 hover:bg-gray-800 hover:text-white transition">
@@ -102,23 +98,21 @@ const StudentLayout = ({ children }) => {
         </div>
       </aside>
 
-      {/* ── Mobile top bar ── */}
+      {/* Mobile top bar */}
       <div className="md:hidden fixed top-0 left-0 w-full bg-gray-900 border-b border-gray-800 z-40 px-4 py-2 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <img src="/images/plasu-logo.png" alt="PLASU"
-            className="w-8 h-8 object-contain rounded-full bg-white p-0.5" />
+          <img src="/images/plasu-logo.png" alt="PLASU" className="w-8 h-8 object-contain rounded-full bg-white p-0.5" />
           <p className="text-white font-bold text-sm">PLASU SafeApp</p>
         </div>
         <div className="flex items-center gap-2">
           <span className="text-white text-xs opacity-70">{user?.name?.split(" ")[0]}</span>
-          <button onClick={handleLogout}
-            className="text-gray-400 text-xs border border-gray-700 px-2 py-1 rounded-lg">
+          <button onClick={handleLogout} className="text-gray-400 text-xs border border-gray-700 px-2 py-1 rounded-lg">
             Logout
           </button>
         </div>
       </div>
 
-      {/* ── Mobile bottom nav ── */}
+      {/* Mobile bottom nav */}
       <nav className="md:hidden fixed bottom-0 left-0 w-full bg-gray-900 border-t border-gray-800 z-40 flex justify-around py-1">
         {navItems.slice(0, 5).map(({ to, icon, label, hasBadge }) => (
           <NavLink key={to} to={to} end={to === "/"}
@@ -140,8 +134,8 @@ const StudentLayout = ({ children }) => {
         ))}
       </nav>
 
-      {/* ── Main scrollable content ── */}
-      <main className="flex-1 md:ml-64 overflow-y-auto h-screen pt-14 md:pt-0 pb-16 md:pb-0">
+      {/* Main content — scrolls normally */}
+      <main className="flex-1 md:ml-64 pt-14 md:pt-0 pb-20 md:pb-0 min-h-screen">
         {children}
       </main>
     </div>
