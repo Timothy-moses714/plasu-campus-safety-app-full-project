@@ -9,24 +9,27 @@ const ForgotPassword = () => {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
 
-  const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
-
   const handleSubmit = async () => {
     if (!email) return setError("Please enter your email address.");
     setLoading(true);
     setError("");
+
+    // Get base URL — must end with /api
+    const base = (process.env.REACT_APP_API_URL || "http://localhost:5000/api").replace(/\/$/, "");
+
     try {
-      const res = await fetch(`${BASE_URL}/auth/forgot-password`, {
+      const res = await fetch(`${base}/auth/forgot-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
-      let data;
-      try {
-        data = await res.json();
-      } catch {
-        throw new Error("Could not connect to server. Please try again later.");
+
+      const contentType = res.headers.get("content-type") || "";
+      if (!contentType.includes("application/json")) {
+        throw new Error("Server error. Check that your backend is running and REACT_APP_API_URL is set correctly.");
       }
+
+      const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Something went wrong.");
       setSuccess(true);
     } catch (err) {
@@ -40,7 +43,6 @@ const ForgotPassword = () => {
     <div className="min-h-screen flex flex-col bg-gray-900">
       <div className="flex-1 flex items-center justify-center px-4 py-8">
         <div className="w-full max-w-md">
-          {/* Logo */}
           <div className="text-center mb-8">
             <img src="/images/plasu-logo.png" alt="PLASU"
               className="w-16 h-16 object-contain rounded-full bg-red-600 p-1.5 mx-auto mb-4" />
@@ -58,8 +60,7 @@ const ForgotPassword = () => {
                 </div>
                 <p className="text-green-400 font-bold text-lg">Email Sent!</p>
                 <p className="text-gray-400 text-sm">
-                  A password reset link has been sent to{" "}
-                  <span className="text-white font-semibold">{email}</span>.
+                  Reset link sent to <span className="text-white font-semibold">{email}</span>.
                   Check your inbox and spam folder.
                 </p>
                 <p className="text-gray-500 text-xs">Link expires in 30 minutes.</p>
@@ -76,31 +77,29 @@ const ForgotPassword = () => {
                   </div>
                 )}
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1.5">
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                  <label className="block text-sm font-medium text-gray-300 mb-1.5">Email Address</label>
+                  <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
                     className="w-full bg-gray-700 border border-gray-600 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 placeholder-gray-500"
-                    placeholder="you@plasu.edu.ng"
-                  />
+                    placeholder="you@plasu.edu.ng" />
                 </div>
-                <button
-                  onClick={handleSubmit}
-                  disabled={loading}
+                <button onClick={handleSubmit} disabled={loading}
                   className="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-3 rounded-xl transition disabled:opacity-50 flex items-center justify-center gap-2">
                   {loading ? <Spinner size="sm" color="white" /> : "Send Reset Link →"}
                 </button>
-                <Link to="/login"
-                  className="block text-center text-sm text-gray-500 hover:text-gray-300 transition">
+                <Link to="/login" className="block text-center text-sm text-gray-500 hover:text-gray-300 transition">
                   ← Back to Login
                 </Link>
               </div>
             )}
           </div>
+
+          {/* Debug info — only shows in development */}
+          {process.env.NODE_ENV === "development" && (
+            <p className="text-gray-600 text-xs text-center mt-3">
+              API: {process.env.REACT_APP_API_URL || "http://localhost:5000/api"}
+            </p>
+          )}
         </div>
       </div>
       <Footer />

@@ -3,8 +3,6 @@ import AdminLayout from "../../components/admin/AdminLayout";
 import { useAuth } from "../../context/AuthContext";
 import Spinner from "../../components/common/Spinner";
 
-const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
-
 const LEVEL_COLORS = {
   high:   "bg-red-900 border-red-600",
   medium: "bg-yellow-900 border-yellow-600",
@@ -20,18 +18,31 @@ const AdminRiskZones = () => {
   const [error, setError] = useState("");
   const { user } = useAuth();
 
+  const BASE_URL = (process.env.REACT_APP_API_URL || "http://localhost:5000/api").replace(/\/$/, "");
+
+  const safeFetch = async (url, options = {}) => {
+    const res = await fetch(url, options);
+    const contentType = res.headers.get("content-type") || "";
+    if (!contentType.includes("application/json")) {
+      throw new Error(`Server returned HTML instead of JSON. Check REACT_APP_API_URL is set to your backend URL (currently: ${BASE_URL})`);
+    }
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "Request failed");
+    return data;
+  };
+
   const fetchZones = useCallback(async () => {
     try {
-      const res = await fetch(`${BASE_URL}/riskzones`, {
+      const data = await safeFetch(`${BASE_URL}/riskzones`, {
         headers: { Authorization: `Bearer ${user.token}` },
       });
-      const data = await res.json();
       setZones(data.data || []);
     } catch (err) {
-      console.error(err);
+      setError(err.message);
     } finally {
       setLoading(false);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user.token]);
 
   useEffect(() => { fetchZones(); }, [fetchZones]);
@@ -40,14 +51,12 @@ const AdminRiskZones = () => {
     setClassifying(true);
     setError("");
     try {
-      const res = await fetch(`${BASE_URL}/riskzones/auto-classify`, {
+      await safeFetch(`${BASE_URL}/riskzones/auto-classify`, {
         headers: { Authorization: `Bearer ${user.token}` },
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Classification failed");
       await fetchZones();
     } catch (err) {
-      setError(err.message || "Classification failed. Check backend connection.");
+      setError(err.message);
     } finally {
       setClassifying(false);
     }
@@ -56,13 +65,13 @@ const AdminRiskZones = () => {
   const handleDelete = async (id) => {
     if (!window.confirm("Remove this risk zone?")) return;
     try {
-      await fetch(`${BASE_URL}/riskzones/${id}`, {
+      await safeFetch(`${BASE_URL}/riskzones/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${user.token}` },
       });
       setZones(prev => prev.filter(z => z._id !== id));
-    } catch {
-      alert("Failed to remove zone");
+    } catch (err) {
+      alert(err.message);
     }
   };
 
@@ -87,33 +96,35 @@ const AdminRiskZones = () => {
         </div>
 
         {error && (
-          <div className="bg-red-900 border border-red-700 text-red-200 text-sm p-3 rounded-xl">
-            {error}
+          <div className="bg-red-900 border border-red-700 text-red-200 text-sm p-4 rounded-xl">
+            <p className="font-bold mb-1">Error:</p>
+            <p>{error}</p>
+            <p className="text-xs mt-2 opacity-70">Current API URL: {BASE_URL}</p>
           </div>
         )}
 
-        {/* Info card */}
         <div className="bg-gray-800 border border-gray-700 rounded-2xl p-4">
           <p className="text-white font-semibold text-sm mb-2">How the ML Model Works</p>
           <p className="text-gray-400 text-xs leading-relaxed">
             The Random Forest-inspired classifier analyses each campus location based on incident history,
-            lighting conditions, isolation level, and time of day. Locations are scored and classified
-            as High (🔴 score ≥60), Medium (🟡 score ≥30), or Low (🟢 score below 30) risk.
+            lighting conditions, isolation level, and time of day. Scores: incidents ≥5 (+40pts),
+            poor lighting (+25pts), isolated (+20pts), night time (+15pts).
+            High = ≥60, Medium = ≥30, Low = below 30.
           </p>
           <div className="flex gap-4 mt-3 text-xs">
-            <span className="text-red-400">🔴 High: {stats.high} zones</span>
-            <span className="text-yellow-400">🟡 Medium: {stats.medium} zones</span>
-            <span className="text-green-400">🟢 Low: {stats.low} zones</span>
+            <span className="text-red-400">🔴 High: {stats.high}</span>
+            <span className="text-yellow-400">🟡 Medium: {stats.medium}</span>
+            <span className="text-green-400">🟢 Low: {stats.low}</span>
           </div>
         </div>
 
         {loading ? (
           <div className="flex justify-center py-12"><Spinner size="lg" color="red" /></div>
         ) : zones.length === 0 ? (
-          <div className="text-center py-12 text-gray-500">
+          <div className="text-center py-12">
             <p className="text-5xl mb-3">🤖</p>
-            <p className="font-semibold text-white">No risk zones classified yet</p>
-            <p className="text-sm mt-1">Click "Run ML Classification" to analyse all campus locations</p>
+            <p className="text-white font-semibold">No risk zones classified yet</p>
+            <p className="text-gray-400 text-sm mt-1">Click "Run ML Classification" to analyse all campus locations</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -132,14 +143,13 @@ const AdminRiskZones = () => {
                     }`}>{zone.level} risk</span>
                   </div>
                   <button onClick={() => handleDelete(zone._id)}
-                    className="text-gray-500 hover:text-red-400 text-sm transition shrink-0">✕</button>
+                    className="text-gray-500 hover:text-red-400 text-sm transition">✕</button>
                 </div>
                 <div className={`space-y-1 text-xs ${LEVEL_TEXT[zone.level]} opacity-80`}>
                   <p>📍 {zone.location?.lat?.toFixed(4)}, {zone.location?.lng?.toFixed(4)}</p>
                   <p>💡 Lighting: {zone.features?.lighting}</p>
                   <p>🏚 Isolated: {zone.features?.isolated ? "Yes" : "No"}</p>
                   <p>📋 Incidents nearby: {zone.features?.incidentCount}</p>
-                  <p>🌙 High risk at: {zone.features?.timeOfDay}</p>
                 </div>
                 <a href={`https://maps.google.com/?q=${zone.location?.lat},${zone.location?.lng}`}
                   target="_blank" rel="noopener noreferrer"

@@ -16,88 +16,96 @@ const AdminLayout = ({ children }) => {
   const handleLogout = () => { logout(); navigate("/admin/login"); };
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh", backgroundColor: "#111827" }}>
+    <div className="min-h-screen bg-gray-900">
 
-      {/* ── DESKTOP SIDEBAR ── */}
-      <aside style={{
-        width: "256px", backgroundColor: "#1f2937", borderRight: "1px solid #374151",
-        display: "flex", flexDirection: "column", position: "fixed",
-        top: 0, left: 0, height: "100vh", zIndex: 30, overflowY: "auto"
-      }} className="hidden md:flex">
-        <div style={{ position: "relative", height: "128px", overflow: "hidden", flexShrink: 0 }}>
-          <img src="/images/campus-gate-2.jpg" alt="PLASU" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-          <div style={{ position: "absolute", inset: 0, backgroundColor: "rgba(17,24,39,0.7)", display: "flex", alignItems: "center", padding: "16px", gap: "12px" }}>
-            <img src="/images/plasu-logo.png" alt="PLASU"
-              style={{ width: "40px", height: "40px", objectFit: "contain", borderRadius: "50%", background: "white", padding: "2px", flexShrink: 0 }} />
-            <div>
-              <p style={{ color: "white", fontWeight: "bold", fontSize: "14px" }}>PLASU SafeApp</p>
-              <p style={{ color: "#d1d5db", fontSize: "12px", textTransform: "capitalize" }}>{user?.role} Portal</p>
+      {/* ── DESKTOP: sidebar + content side by side ── */}
+      <div className="hidden md:flex min-h-screen">
+
+        {/* Sidebar — sticky */}
+        <aside className="w-64 bg-gray-800 border-r border-gray-700 flex flex-col flex-shrink-0 sticky top-0 h-screen overflow-y-auto">
+          <div className="relative h-32 overflow-hidden shrink-0">
+            <img src="/images/campus-gate-2.jpg" alt="PLASU" className="w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-gray-900 bg-opacity-70 flex items-center p-4 gap-3">
+              <img src="/images/plasu-logo.png" alt="PLASU"
+                className="w-10 h-10 object-contain rounded-full bg-white p-0.5 shrink-0" />
+              <div>
+                <p className="text-white font-bold text-sm">PLASU SafeApp</p>
+                <p className="text-gray-300 text-xs capitalize">{user?.role} Portal</p>
+              </div>
             </div>
+          </div>
+
+          <nav className="flex-1 p-4 space-y-1">
+            {navItems.map(({ to, icon, label }) => (
+              <NavLink key={to} to={to}
+                className={({ isActive }) =>
+                  `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition ${
+                    isActive ? "bg-red-600 text-white" : "text-gray-400 hover:bg-gray-700 hover:text-white"
+                  }`
+                }>
+                <span>{icon}</span>
+                <span>{label}</span>
+              </NavLink>
+            ))}
+          </nav>
+
+          <div className="p-4 border-t border-gray-700 shrink-0">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-8 h-8 bg-red-600 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0">
+                {user?.name?.[0]}
+              </div>
+              <div className="min-w-0">
+                <p className="text-white text-xs font-semibold truncate">{user?.name}</p>
+                <p className="text-gray-400 text-xs capitalize">{user?.role}</p>
+              </div>
+            </div>
+            <button onClick={handleLogout}
+              className="w-full bg-gray-700 hover:bg-gray-600 text-gray-300 text-sm py-2 rounded-lg transition">
+              Logout
+            </button>
+          </div>
+        </aside>
+
+        {/* Main content */}
+        <main className="flex-1 overflow-y-auto">
+          <div className="p-4 sm:p-6 md:p-8">
+            {children}
+          </div>
+        </main>
+      </div>
+
+      {/* ── MOBILE ── */}
+      <div className="md:hidden">
+        {/* Fixed top bar */}
+        <div className="fixed top-0 left-0 right-0 bg-gray-800 border-b border-gray-700 z-40 px-4 py-2 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <img src="/images/plasu-logo.png" alt="PLASU" className="w-7 h-7 object-contain rounded-full bg-white p-0.5" />
+            <p className="text-white font-bold text-sm">Admin Portal</p>
+          </div>
+          <button onClick={handleLogout} className="text-gray-400 text-sm">Logout</button>
+        </div>
+
+        {/* Content */}
+        <div className="pt-14 pb-16">
+          <div className="p-4">
+            {children}
           </div>
         </div>
 
-        <nav style={{ flex: 1, padding: "16px", overflowY: "auto" }}>
+        {/* Fixed bottom nav */}
+        <nav className="fixed bottom-0 left-0 right-0 bg-gray-800 border-t border-gray-700 z-40 flex justify-around py-1">
           {navItems.map(({ to, icon, label }) => (
             <NavLink key={to} to={to}
-              style={({ isActive }) => ({
-                display: "flex", alignItems: "center", gap: "12px",
-                padding: "12px 16px", borderRadius: "12px", marginBottom: "4px",
-                textDecoration: "none", fontSize: "14px", fontWeight: "500",
-                backgroundColor: isActive ? "#dc2626" : "transparent",
-                color: isActive ? "white" : "#9ca3af",
-              })}>
-              <span>{icon}</span>
-              <span>{label}</span>
+              className={({ isActive }) =>
+                `flex flex-col items-center gap-0.5 px-1 py-1 text-xs ${
+                  isActive ? "text-red-400 font-bold" : "text-gray-500"
+                }`
+              }>
+              <span className="text-base">{icon}</span>
+              <span className="text-[9px]">{label.split(" ")[0]}</span>
             </NavLink>
           ))}
         </nav>
-
-        <div style={{ padding: "16px", borderTop: "1px solid #374151", flexShrink: 0 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "12px" }}>
-            <div style={{ width: "32px", height: "32px", backgroundColor: "#dc2626", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: "12px", fontWeight: "bold", flexShrink: 0 }}>
-              {user?.name?.[0]}
-            </div>
-            <div style={{ minWidth: 0 }}>
-              <p style={{ color: "white", fontSize: "12px", fontWeight: "600", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user?.name}</p>
-              <p style={{ color: "#9ca3af", fontSize: "12px", textTransform: "capitalize" }}>{user?.role}</p>
-            </div>
-          </div>
-          <button onClick={handleLogout} style={{ width: "100%", backgroundColor: "#374151", color: "#d1d5db", fontSize: "14px", padding: "8px", borderRadius: "8px", border: "none", cursor: "pointer" }}>
-            Logout
-          </button>
-        </div>
-      </aside>
-
-      {/* ── MOBILE TOP BAR ── */}
-      <div className="md:hidden" style={{ position: "fixed", top: 0, left: 0, width: "100%", backgroundColor: "#1f2937", borderBottom: "1px solid #374151", zIndex: 40, padding: "8px 16px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <img src="/images/plasu-logo.png" alt="PLASU" style={{ width: "28px", height: "28px", objectFit: "contain", borderRadius: "50%", background: "white", padding: "2px" }} />
-          <p style={{ color: "white", fontWeight: "bold", fontSize: "14px" }}>Admin Portal</p>
-        </div>
-        <button onClick={handleLogout} style={{ color: "#9ca3af", fontSize: "14px", background: "none", border: "none", cursor: "pointer" }}>Logout</button>
-      </div>
-
-      {/* ── MOBILE BOTTOM NAV ── */}
-      <nav className="md:hidden" style={{ position: "fixed", bottom: 0, left: 0, width: "100%", backgroundColor: "#1f2937", borderTop: "1px solid #374151", zIndex: 40, display: "flex", justifyContent: "space-around", padding: "4px 0" }}>
-        {navItems.map(({ to, icon, label }) => (
-          <NavLink key={to} to={to}
-            style={({ isActive }) => ({
-              display: "flex", flexDirection: "column", alignItems: "center", gap: "2px",
-              padding: "4px 2px", textDecoration: "none", fontSize: "9px",
-              color: isActive ? "#f87171" : "#6b7280", fontWeight: isActive ? "bold" : "normal",
-            })}>
-            <span style={{ fontSize: "16px" }}>{icon}</span>
-            <span>{label.split(" ")[0]}</span>
-          </NavLink>
-        ))}
-      </nav>
-
-      {/* ── MAIN CONTENT ── */}
-      <div style={{ flex: 1, paddingTop: "56px", paddingBottom: "72px" }}
-        className="md:ml-64 md:pt-0 md:pb-0">
-        <div style={{ padding: "16px" }} className="sm:p-6 md:p-8">
-          {children}
-        </div>
       </div>
     </div>
   );

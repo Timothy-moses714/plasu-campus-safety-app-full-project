@@ -36,115 +36,118 @@ const StudentLayout = ({ children }) => {
   const handleLogout = () => { logout(); navigate("/login"); };
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh", backgroundColor: "#f9fafb" }}>
+    <div className="min-h-screen bg-gray-50">
       <AlertBanner />
 
-      {/* ── DESKTOP SIDEBAR (fixed, only visible md+) ── */}
-      <aside style={{
-        width: "256px", backgroundColor: "#111827", display: "flex",
-        flexDirection: "column", position: "fixed", top: 0, left: 0,
-        height: "100vh", zIndex: 30, overflowY: "auto"
-      }} className="hidden md:flex">
-        <div style={{ position: "relative", height: "144px", overflow: "hidden", flexShrink: 0 }}>
-          <img src="/images/campus-gate.jpg" alt="PLASU" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, transparent, #111827)", opacity: 0.9 }} />
-          <div style={{ position: "absolute", bottom: 0, left: 0, padding: "16px", display: "flex", alignItems: "center", gap: "12px" }}>
-            <img src="/images/plasu-logo.png" alt="PLASU"
-              style={{ width: "40px", height: "40px", objectFit: "contain", borderRadius: "50%", background: "white", padding: "2px", border: "2px solid #ef4444" }} />
-            <div>
-              <p style={{ color: "white", fontWeight: "bold", fontSize: "14px" }}>PLASU SafeApp</p>
-              <p style={{ color: "#9ca3af", fontSize: "12px" }}>Campus Safety</p>
+      {/* ── DESKTOP: sidebar + content side by side ── */}
+      <div className="hidden md:flex min-h-screen">
+
+        {/* Sidebar — fixed width, sticky */}
+        <aside className="w-64 bg-gray-900 flex flex-col flex-shrink-0 sticky top-0 h-screen overflow-y-auto">
+          <div className="relative h-36 overflow-hidden shrink-0">
+            <img src="/images/campus-gate.jpg" alt="PLASU" className="w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-900 opacity-90" />
+            <div className="absolute bottom-0 left-0 p-4 flex items-center gap-3">
+              <img src="/images/plasu-logo.png" alt="PLASU"
+                className="w-10 h-10 object-contain rounded-full bg-white p-0.5 border-2 border-red-500 shrink-0" />
+              <div>
+                <p className="text-white font-bold text-sm">PLASU SafeApp</p>
+                <p className="text-gray-400 text-xs">Campus Safety</p>
+              </div>
             </div>
+          </div>
+
+          <div className="px-4 py-3 border-b border-gray-800 shrink-0">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full overflow-hidden bg-red-600 shrink-0 flex items-center justify-center border-2 border-red-500">
+                {user?.profilePicture
+                  ? <img src={user.profilePicture} alt={user.name} className="w-full h-full object-cover" />
+                  : <span className="text-white font-bold text-sm">{user?.name?.[0]}</span>
+                }
+              </div>
+              <div className="min-w-0">
+                <p className="text-white font-semibold text-sm truncate">{user?.name}</p>
+                <p className="text-gray-400 text-xs truncate">{user?.matricNumber}</p>
+              </div>
+            </div>
+          </div>
+
+          <nav className="flex-1 p-4 space-y-1">
+            {navItems.map(({ to, icon, label, hasBadge }) => (
+              <NavLink key={to} to={to} end={to === "/"}
+                className={({ isActive }) =>
+                  `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition ${
+                    isActive ? "bg-red-600 text-white" : "text-gray-400 hover:bg-gray-800 hover:text-white"
+                  }`
+                }>
+                <span className="text-lg">{icon}</span>
+                <span className="flex-1">{label}</span>
+                {hasBadge && alertCount > 0 && (
+                  <span className="bg-red-500 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                    {alertCount > 9 ? "9+" : alertCount}
+                  </span>
+                )}
+              </NavLink>
+            ))}
+          </nav>
+
+          <div className="p-4 border-t border-gray-800 shrink-0">
+            <button onClick={handleLogout}
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-400 hover:bg-gray-800 hover:text-white transition">
+              <span className="text-lg">🚪</span>
+              <span>Logout</span>
+            </button>
+          </div>
+        </aside>
+
+        {/* Main content — takes remaining width, scrolls independently */}
+        <main className="flex-1 overflow-y-auto">
+          {children}
+        </main>
+      </div>
+
+      {/* ── MOBILE: top bar + content + bottom nav ── */}
+      <div className="md:hidden">
+        {/* Fixed top bar */}
+        <div className="fixed top-0 left-0 right-0 bg-gray-900 border-b border-gray-800 z-40 px-4 py-2 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <img src="/images/plasu-logo.png" alt="PLASU" className="w-8 h-8 object-contain rounded-full bg-white p-0.5" />
+            <p className="text-white font-bold text-sm">PLASU SafeApp</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-white text-xs opacity-70">{user?.name?.split(" ")[0]}</span>
+            <button onClick={handleLogout} className="text-gray-400 text-xs border border-gray-700 px-2 py-1 rounded-lg">
+              Logout
+            </button>
           </div>
         </div>
 
-        <div style={{ padding: "12px 16px", borderBottom: "1px solid #1f2937", flexShrink: 0 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            <div style={{ width: "40px", height: "40px", borderRadius: "50%", overflow: "hidden", backgroundColor: "#dc2626", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", border: "2px solid #ef4444" }}>
-              {user?.profilePicture
-                ? <img src={user.profilePicture} alt={user.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                : <span style={{ color: "white", fontWeight: "bold", fontSize: "14px" }}>{user?.name?.[0]}</span>
-              }
-            </div>
-            <div style={{ minWidth: 0 }}>
-              <p style={{ color: "white", fontWeight: "600", fontSize: "14px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user?.name}</p>
-              <p style={{ color: "#9ca3af", fontSize: "12px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user?.matricNumber}</p>
-            </div>
-          </div>
+        {/* Content — padded top and bottom to clear fixed bars */}
+        <div className="pt-14 pb-16">
+          {children}
         </div>
 
-        <nav style={{ flex: 1, padding: "16px", overflowY: "auto" }}>
-          {navItems.map(({ to, icon, label, hasBadge }) => (
+        {/* Fixed bottom nav */}
+        <nav className="fixed bottom-0 left-0 right-0 bg-gray-900 border-t border-gray-800 z-40 flex justify-around py-1">
+          {navItems.slice(0, 5).map(({ to, icon, label, hasBadge }) => (
             <NavLink key={to} to={to} end={to === "/"}
-              style={({ isActive }) => ({
-                display: "flex", alignItems: "center", gap: "12px",
-                padding: "12px 16px", borderRadius: "12px", marginBottom: "4px",
-                textDecoration: "none", fontSize: "14px", fontWeight: "500",
-                backgroundColor: isActive ? "#dc2626" : "transparent",
-                color: isActive ? "white" : "#9ca3af",
-              })}>
-              <span style={{ fontSize: "18px" }}>{icon}</span>
-              <span style={{ flex: 1 }}>{label}</span>
-              {hasBadge && alertCount > 0 && (
-                <span style={{ backgroundColor: "#ef4444", color: "white", fontSize: "11px", fontWeight: "bold", width: "20px", height: "20px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  {alertCount > 9 ? "9+" : alertCount}
-                </span>
-              )}
+              className={({ isActive }) =>
+                `flex flex-col items-center gap-0.5 px-1 py-1 rounded-lg transition ${
+                  isActive ? "text-red-400 font-bold" : "text-gray-500"
+                }`
+              }>
+              <div className="relative">
+                <span className="text-xl">{icon}</span>
+                {hasBadge && alertCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[8px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                    {alertCount > 9 ? "9+" : alertCount}
+                  </span>
+                )}
+              </div>
+              <span className="text-[9px]">{label.split(" ")[0]}</span>
             </NavLink>
           ))}
         </nav>
-
-        <div style={{ padding: "16px", borderTop: "1px solid #1f2937", flexShrink: 0 }}>
-          <button onClick={handleLogout} style={{ width: "100%", display: "flex", alignItems: "center", gap: "12px", padding: "12px 16px", borderRadius: "12px", border: "none", backgroundColor: "transparent", color: "#9ca3af", fontSize: "14px", fontWeight: "500", cursor: "pointer" }}>
-            <span style={{ fontSize: "18px" }}>🚪</span>
-            <span>Logout</span>
-          </button>
-        </div>
-      </aside>
-
-      {/* ── MOBILE TOP BAR ── */}
-      <div className="md:hidden" style={{ position: "fixed", top: 0, left: 0, width: "100%", backgroundColor: "#111827", borderBottom: "1px solid #1f2937", zIndex: 40, padding: "8px 16px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <img src="/images/plasu-logo.png" alt="PLASU" style={{ width: "32px", height: "32px", objectFit: "contain", borderRadius: "50%", background: "white", padding: "2px" }} />
-          <p style={{ color: "white", fontWeight: "bold", fontSize: "14px" }}>PLASU SafeApp</p>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <span style={{ color: "white", fontSize: "12px", opacity: 0.7 }}>{user?.name?.split(" ")[0]}</span>
-          <button onClick={handleLogout} style={{ color: "#9ca3af", fontSize: "12px", border: "1px solid #374151", padding: "4px 8px", borderRadius: "8px", background: "none", cursor: "pointer" }}>
-            Logout
-          </button>
-        </div>
-      </div>
-
-      {/* ── MOBILE BOTTOM NAV ── */}
-      <nav className="md:hidden" style={{ position: "fixed", bottom: 0, left: 0, width: "100%", backgroundColor: "#111827", borderTop: "1px solid #1f2937", zIndex: 40, display: "flex", justifyContent: "space-around", padding: "4px 0" }}>
-        {navItems.slice(0, 5).map(({ to, icon, label, hasBadge }) => (
-          <NavLink key={to} to={to} end={to === "/"}
-            style={({ isActive }) => ({
-              display: "flex", flexDirection: "column", alignItems: "center", gap: "2px",
-              padding: "4px 8px", borderRadius: "8px", textDecoration: "none",
-              color: isActive ? "#f87171" : "#6b7280", fontWeight: isActive ? "bold" : "normal",
-            })}>
-            <div style={{ position: "relative" }}>
-              <span style={{ fontSize: "20px" }}>{icon}</span>
-              {hasBadge && alertCount > 0 && (
-                <span style={{ position: "absolute", top: "-4px", right: "-4px", backgroundColor: "#ef4444", color: "white", fontSize: "9px", fontWeight: "bold", width: "14px", height: "14px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  {alertCount > 9 ? "9+" : alertCount}
-                </span>
-              )}
-            </div>
-            <span style={{ fontSize: "9px" }}>{label.split(" ")[0]}</span>
-          </NavLink>
-        ))}
-      </nav>
-
-      {/* ── MAIN CONTENT ──
-          KEY FIX: Use paddingTop/paddingBottom to push content away from fixed bars
-          NOT margin or position tricks — just simple padding on a normal flow div
-      ── */}
-      <div style={{ flex: 1, marginLeft: "0px", paddingTop: "56px", paddingBottom: "72px" }}
-        className="md:ml-64 md:pt-0 md:pb-0">
-        {children}
       </div>
     </div>
   );
