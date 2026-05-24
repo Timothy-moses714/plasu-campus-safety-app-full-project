@@ -2,23 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-
-html {
-  height: 100%;
-}
-
-body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-}
-
-#root {
-  height: 100%;
-}
-
 /* Thin scrollbar */
-::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #4B5563; border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: #6B7280; }

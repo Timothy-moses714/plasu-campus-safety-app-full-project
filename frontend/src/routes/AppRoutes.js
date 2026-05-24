@@ -11,6 +11,8 @@ import RoutePlanner from "../pages/RoutePlanner";
 import ReportIncident from "../pages/ReportIncident";
 import Notifications from "../pages/Notifications";
 import Profile from "../pages/Profile";
+import About from "../pages/About";
+import MyIncidents from "../pages/MyIncidents";
 
 import AdminLogin from "../pages/admin/AdminLogin";
 import AdminDashboard from "../pages/admin/AdminDashboard";
@@ -22,21 +24,23 @@ import AdminRiskZones from "../pages/admin/AdminRiskZones";
 
 const AppRoutes = () => (
   <Routes>
-    {/* Public */}
-    <Route path="/login"                element={<Login />} />
-    <Route path="/register"             element={<Register />} />
-    <Route path="/forgot-password"      element={<ForgotPassword />} />
-    <Route path="/reset-password/:token" element={<ResetPassword />} />
+    {/* Public routes */}
+    <Route path="/login"                  element={<Login />} />
+    <Route path="/register"               element={<Register />} />
+    <Route path="/forgot-password"        element={<ForgotPassword />} />
+    <Route path="/reset-password/:token"  element={<ResetPassword />} />
+    <Route path="/admin/login"            element={<AdminLogin />} />
 
-    {/* Student Protected */}
-    <Route path="/"             element={<PrivateRoute><Home /></PrivateRoute>} />
+    {/* Student protected routes */}
+    <Route path="/"              element={<PrivateRoute><Home /></PrivateRoute>} />
     <Route path="/route-planner" element={<PrivateRoute><RoutePlanner /></PrivateRoute>} />
     <Route path="/report"        element={<PrivateRoute><ReportIncident /></PrivateRoute>} />
+    <Route path="/my-incidents"  element={<PrivateRoute><MyIncidents /></PrivateRoute>} />
     <Route path="/notifications" element={<PrivateRoute><Notifications /></PrivateRoute>} />
     <Route path="/profile"       element={<PrivateRoute><Profile /></PrivateRoute>} />
+    <Route path="/about"         element={<PrivateRoute><About /></PrivateRoute>} />
 
-    {/* Admin/Security */}
-    <Route path="/admin/login"      element={<AdminLogin />} />
+    {/* Admin/Security protected routes */}
     <Route path="/admin/dashboard"  element={<AdminRoute><AdminDashboard /></AdminRoute>} />
     <Route path="/admin/panics"     element={<AdminRoute><AdminPanics /></AdminRoute>} />
     <Route path="/admin/incidents"  element={<AdminRoute><AdminIncidents /></AdminRoute>} />
