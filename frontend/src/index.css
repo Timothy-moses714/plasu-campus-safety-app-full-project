@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 /* Thin scrollbar */
-::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar { width: 15px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #4B5563; border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: #6B7280; }

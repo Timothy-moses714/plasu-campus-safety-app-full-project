@@ -36,11 +36,11 @@ const Register = () => {
 
   const fields = [
     { name: "name", label: "Full Name", type: "text", placeholder: "Moses Timothy Ajiji", span: true },
-    { name: "email", label: "Email Address", type: "email", placeholder: "you@plasu.edu.ng", span: true },
-    { name: "matricNumber", label: "Matric Number", type: "text", placeholder: "PLASU/2021/FNAS/0001" },
+    { name: "email", label: "Email Address", type: "email", placeholder: "you@email.com", span: true },
+    { name: "matricNumber", label: "Matric Number", type: "text", placeholder: "PLASU/2020/FNAS/0001" },
     { name: "department", label: "Department / Faculty", type: "text", placeholder: "Computer Science" },
     { name: "phone", label: "Phone Number", type: "tel", placeholder: "08012345678" },
-    { name: "address", label: "Home / Hostel Address", type: "text", placeholder: "Block A Room 12, Male Hostel" },
+    { name: "address", label: "Home / Hostel Address", type: "text", placeholder: "Hostel, Chalet, Across, Ndar, Chikam" },
   ];
 
   return (
@@ -108,9 +108,7 @@ const Register = () => {
                     placeholder={placeholder} />
                 </div>
               ))}
-              <div className="sm:col-span-2">
-                <p className="text-xs text-gray-600">📝 Matric format: PLASU/YEAR/FACULTY/NUMBER</p>
-              </div>
+              
               <div className="sm:col-span-2">
                 <label className="block text-xs font-medium text-gray-400 mb-1">Password</label>
                 <div className="relative">
@@ -120,7 +118,7 @@ const Register = () => {
                     placeholder="Min. 6 characters" />
                   <button type="button" onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200 text-lg">
-                    {showPassword ? "🙈" : "👁"}
+                    {showPassword ? "👁" : "👁"}
                   </button>
                 </div>
               </div>
