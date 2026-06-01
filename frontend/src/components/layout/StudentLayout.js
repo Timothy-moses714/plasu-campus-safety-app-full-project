@@ -45,7 +45,7 @@ const StudentLayout = ({ children }) => {
         {/* Sidebar — fixed width, sticky */}
         <aside className="w-64 bg-gray-900 flex flex-col flex-shrink-0 sticky top-0 h-screen overflow-y-auto">
           <div className="relative h-36 overflow-hidden shrink-0">
-            <img src="/images/campus-gate.jpg" alt="PLASU" className="w-full h-full object-cover" />
+            <img src="/images/campus-main.jpg" alt="PLASU" className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-900 opacity-90" />
             <div className="absolute bottom-0 left-0 p-4 flex items-center gap-3">
               <img src="/images/plasu-logo.png" alt="PLASU"

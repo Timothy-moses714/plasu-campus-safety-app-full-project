@@ -81,7 +81,7 @@ const ForgotPassword = () => {
                   <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
                     className="w-full bg-gray-700 border border-gray-600 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 placeholder-gray-500"
-                    placeholder="you@plasu.edu.ng" />
+                    placeholder="you@gmail.com" />
                 </div>
                 <button onClick={handleSubmit} disabled={loading}
                   className="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-3 rounded-xl transition disabled:opacity-50 flex items-center justify-center gap-2">

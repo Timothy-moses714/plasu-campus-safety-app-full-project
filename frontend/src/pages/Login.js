@@ -200,7 +200,7 @@ const Login = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full bg-gray-800 border border-gray-700 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
-                placeholder="you@plasu.edu.ng"
+                placeholder="you@gmail.com"
               />
             </div>
 
@@ -233,7 +233,7 @@ const Login = () => {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
                 >
-                  {showPassword ? "🙈" : "👁"}
+                  {showPassword ? "👁" : "👁"}
                 </button>
               </div>
             </div>
