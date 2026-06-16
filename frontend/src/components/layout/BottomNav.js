@@ -5,6 +5,8 @@ const navItems = [
   { to: "/route-planner", label: "Routes", icon: "🗺" },
   { to: "/report", label: "Report", icon: "📋" },
   { to: "/notifications", label: "Alerts", icon: "🔔" },
+  { to: "/MyIncidents", label: "Incidents", icon: "📄" },
+  { to: "/About", label: "About", icon: "ℹ️" },
   { to: "/profile", label: "Profile", icon: "👤" },
 ];
 

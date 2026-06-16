@@ -116,7 +116,7 @@ const StudentLayout = ({ children }) => {
           </div>
           <div className="flex items-center gap-2">
             <span className="text-white text-xs opacity-70">{user?.name?.split(" ")[0]}</span>
-            <button onClick={handleLogout} className="text-gray-400 text-xs border border-gray-700 px-2 py-1 rounded-lg">
+            <button onClick={handleLogout} className="text-gray-100 text-xs border border-gray-700 px-2 py-1 rounded-lg">
               Logout
             </button>
           </div>
